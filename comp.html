@@ -6,111 +6,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
-  --bg: #f4f6f9;
-  --card: #ffffff;
-  --text: #000000;
-  --border: #dddddd;
-  --btn: #2ecc71;
-  --btnHover: #27ae60;
+  --bg: #f4f6f9; --card: #ffffff; --text: #000000; --border: #dddddd; --btn: #2ecc71; --btnHover: #27ae60;
 }
-body.dark {
-  --bg: #121212;
-  --card: #1e1e1e;
-  --text: #ffffff;
-  --border: #333;
-  --btn: #3498db;
-  --btnHover: #2980b9;
-}
-body {
-  margin: 0;
-  padding: 10px;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  transition: 0.3s;
-}
-.container {
-  max-width: 1000px;
-  margin: auto;
-}
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-.mode-btn {
-  background: var(--btn);
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--card);
-  border-radius: 12px;
-  overflow: hidden;
-  font-size: 14px;
-}
-th, td {
-  border: 1px solid var(--border);
-  padding: 6px;
-  text-align: center;
-}
-th {
-  background: #3498db;
-  color: #fff;
-}
-input {
-  width: 100%;
-  max-width: 70px;
-  padding: 5px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-}
-.btn-group {
-  text-align: center;
-  margin-top: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-button {
-  padding: 10px 15px;
-  border-radius: 10px;
-  border: none;
-  background: var(--btn);
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-}
-button:hover { background: var(--btnHover); }
-.delete-btn { background: #e74c3c; }
-canvas {
-  background: var(--card);
-  border-radius: 15px;
-  padding: 10px;
-  margin-top: 10px;
-}
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  opacity: 0.7;
-}
-.color-picker {
-  margin:0 5px;
-}
-@media (max-width:600px) {
-  th, td { font-size: 12px; padding: 4px; }
-  button { font-size: 12px; padding: 8px 10px; }
-  h3 { font-size: 14px; }
+body.dark { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --btn: #3498db; --btnHover: #2980b9; }
+body { margin:0; padding:10px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); transition:0.3s; }
+.container { max-width:1000px; margin:auto; }
+.top-bar { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:10px; }
+.mode-btn { background:var(--btn); color:#fff; border:none; padding:10px 15px; border-radius:10px; cursor:pointer; }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; font-size:14px; }
+th, td { border:1px solid var(--border); padding:6px; text-align:center; }
+th { background:#3498db; color:#fff; }
+input { width:100%; max-width:70px; padding:5px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); }
+.btn-group { text-align:center; margin-top:10px; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+button { padding:10px 15px; border-radius:10px; border:none; background:var(--btn); color:#fff; font-size:14px; cursor:pointer; }
+button:hover { background:var(--btnHover); }
+.delete-btn { background:#e74c3c; }
+canvas { background:var(--card); border-radius:15px; padding:10px; margin-top:10px; }
+footer { text-align:center; margin-top:20px; font-size:12px; opacity:0.7; }
+.color-picker { margin:0 5px; }
+#highestMarks { margin-top:10px; font-weight:bold; text-align:center; }
+#sumMarks { text-align:center; margin-top:10px; }
+@media (max-width:600px) { th, td { font-size:12px; padding:4px; } button { font-size:12px; padding:8px 10px; } h3 { font-size:14px; }
 }
 </style>
 </head>
@@ -144,6 +60,11 @@ footer {
   </select>
 </div>
 
+<div style="text-align:center; margin-bottom:10px;">
+  View Marks:
+  <select id="viewPerson" onchange="updateTableView()"><option value="all">All</option></select>
+</div>
+
 <table>
   <thead>
     <tr id="tableHead">
@@ -167,6 +88,9 @@ footer {
   </tbody>
 </table>
 
+<div id="highestMarks"></div>
+<div id="sumMarks"></div>
+
 <div class="btn-group">
   <button onclick="addRow()">Add Subject</button>
   <button onclick="exportData()">Export</button>
@@ -185,223 +109,202 @@ footer {
 </div>
 
 <script>
-let db;
-let cieChart,seChart,totalChart;
-let persons = ["p1","p2"];
+let db, cieChart, seChart, totalChart;
+let persons=["p1","p2"];
 
-// IndexedDB
-const request = indexedDB.open("MarksDB",1);
-request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("marks",{ keyPath:"id" }); };
-request.onsuccess = e => { db = e.target.result; loadData(); };
+const request=indexedDB.open("MarksDB",1);
+request.onupgradeneeded=e=>{ db=e.target.result; db.createObjectStore("marks",{keyPath:"id"}); };
+request.onsuccess=e=>{ db=e.target.result; loadData(); };
 
-// Add / Delete row
-function addRow() {
-  const row = document.createElement("tr");
-  let cells = `<td><input></td>`;
-  persons.forEach(p => { cells += `<td><input type="number" value="0"></td><td><input type="number" value="0"></td>`; });
-  cells += `<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
-  row.innerHTML = cells;
+function addRow(){
+  const row=document.createElement("tr");
+  let cells=`<td><input></td>`;
+  persons.forEach(p=>{ cells+=`<td><input type="number" value="0"></td><td><input type="number" value="0"></td>`; });
+  cells+=`<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
+  row.innerHTML=cells;
   document.getElementById("dataTable").appendChild(row);
   attachAutoSave(row);
 }
-function deleteRow(btn) { btn.parentElement.parentElement.remove(); autoSave(); }
 
-// Auto-save
-function autoSave() {
-  const data = getTableData();
-  const names = {};
-  persons.forEach(p => { 
-    const nameInput = document.getElementById(p+"Name"); 
-    if(nameInput) names[p] = nameInput.value; 
-  });
-  const colors = {};
-  persons.forEach(p=>{ const colorInput=document.getElementById(p+"Color"); if(colorInput) colors[p]=colorInput.value; });
-  const tx = db.transaction("marks","readwrite");
-  const store = tx.objectStore("marks");
-  store.put({id:1, data, names, colors});
-  drawCharts();
+function deleteRow(btn){ btn.parentElement.parentElement.remove(); autoSave(); }
+
+function autoSave(){
+  const data=getTableData();
+  const names={}; persons.forEach(p=>{ const ni=document.getElementById(p+"Name"); if(ni) names[p]=ni.value; });
+  const colors={}; persons.forEach(p=>{ const ci=document.getElementById(p+"Color"); if(ci) colors[p]=ci.value; });
+  const tx=db.transaction("marks","readwrite");
+  tx.objectStore("marks").put({id:1,data,names,colors});
+  drawCharts(); showHighestMarks(); showSumMarks(); updateTableView();
 }
 
-// Get table data
-function getTableData() {
-  const rows = document.querySelectorAll("#dataTable tr");
-  return Array.from(rows).map(row => {
-    const i = row.querySelectorAll("input");
-    const obj = { subject: i[0].value };
-    let idx = 1;
-    persons.forEach(p => { obj[p+"_cie"] = +i[idx++].value; obj[p+"_se"] = +i[idx++].value; });
+function getTableData(){
+  const rows=document.querySelectorAll("#dataTable tr");
+  return Array.from(rows).map(row=>{
+    const i=row.querySelectorAll("input");
+    const obj={subject:i[0].value}; let idx=1;
+    persons.forEach(p=>{ obj[p+"_cie"]=+i[idx++].value; obj[p+"_se"]=+i[idx++].value; });
     return obj;
   });
 }
 
-// Load data
-function loadData() {
-  const tx = db.transaction("marks","readonly");
-  const store = tx.objectStore("marks");
-  store.get(1).onsuccess = e => {
+function loadData(){
+  const tx=db.transaction("marks","readonly");
+  tx.objectStore("marks").get(1).onsuccess=e=>{
     if(!e.target.result) return;
-    const data = e.target.result.data;
-    const names = e.target.result.names;
-    const colors = e.target.result.colors;
-
-    Object.keys(names).forEach((p, idx) => {
+    const data=e.target.result.data;
+    const names=e.target.result.names;
+    const colors=e.target.result.colors;
+    Object.keys(names).forEach(p=>{
       if(!persons.includes(p)) addPersonByLoad(p,names[p], colors[p]||'#'+Math.floor(Math.random()*16777215).toString(16));
-      else {
-        document.getElementById(p+"Name").value = names[p];
-        if(colors[p]) document.getElementById(p+"Color").value = colors[p];
-      }
+      else { document.getElementById(p+"Name").value=names[p]; if(colors[p]) document.getElementById(p+"Color").value=colors[p]; }
     });
-
-    const tbody = document.getElementById("dataTable");
-    tbody.innerHTML = "";
-    data.forEach(d => {
-      const row = document.createElement("tr");
-      let cells = `<td><input value="${d.subject}"></td>`;
-      persons.forEach(p => { cells += `<td><input type="number" value="${d[p+"_cie"]}"></td><td><input type="number" value="${d[p+"_se"]}"></td>`; });
-      cells += `<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
-      row.innerHTML = cells;
-      tbody.appendChild(row);
-      attachAutoSave(row);
+    const tbody=document.getElementById("dataTable"); tbody.innerHTML="";
+    data.forEach(d=>{
+      const row=document.createElement("tr");
+      let cells=`<td><input value="${d.subject}"></td>`;
+      persons.forEach(p=>{ cells+=`<td><input type="number" value="${d[p+"_cie"]}"></td><td><input type="number" value="${d[p+"_se"]}"></td>`; });
+      cells+=`<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
+      row.innerHTML=cells; tbody.appendChild(row); attachAutoSave(row);
     });
-    drawCharts();
+    drawCharts(); refreshPersonView(); showHighestMarks(); showSumMarks();
   };
 }
 
-// Attach auto-save on inputs
-function attachAutoSave(row) {
-  const inputs = row.querySelectorAll("input");
-  inputs.forEach(i => i.addEventListener("input", autoSave));
-}
+function attachAutoSave(row){ row.querySelectorAll("input").forEach(i=>i.addEventListener("input",autoSave)); }
 
-// Add new person
-function addPerson() {
-  const name = document.getElementById("newPersonName").value.trim();
+function addPerson(){
+  const name=document.getElementById("newPersonName").value.trim();
   if(!name) return alert("Enter a name!");
-  const color = document.getElementById("newPersonColor").value;
-  const pId = "p"+(persons.length+1);
-  persons.push(pId);
+  const color=document.getElementById("newPersonColor").value;
+  const pId="p"+(persons.length+1); persons.push(pId);
 
-  // Update table header
-  const th = document.createElement("th"); th.innerText = pId+" CIE";
-  const th2 = document.createElement("th"); th2.innerText = pId+" SE";
-  document.getElementById("tableHead").insertBefore(th, document.getElementById("tableHead").children[document.getElementById("tableHead").children.length-1]);
-  document.getElementById("tableHead").insertBefore(th2, document.getElementById("tableHead").children[document.getElementById("tableHead").children.length-1]);
+  const th=document.createElement("th"); th.innerText=name+" CIE";
+  const th2=document.createElement("th"); th2.innerText=name+" SE";
+  const head=document.getElementById("tableHead");
+  head.insertBefore(th, head.children[head.children.length-1]);
+  head.insertBefore(th2, head.children[head.children.length-1]);
 
-  // Update table rows
-  const rows = document.querySelectorAll("#dataTable tr");
-  rows.forEach(row => {
-    const cieInput = document.createElement("input"); cieInput.type="number"; cieInput.value=0;
-    const seInput = document.createElement("input"); seInput.type="number"; seInput.value=0;
+  document.querySelectorAll("#dataTable tr").forEach(row=>{
+    const cieInput=document.createElement("input"); cieInput.type="number"; cieInput.value=0;
+    const seInput=document.createElement("input"); seInput.type="number"; seInput.value=0;
     row.insertBefore(cieInput, row.children[row.children.length-1]);
     row.insertBefore(seInput, row.children[row.children.length-1]);
     cieInput.addEventListener("input", autoSave);
     seInput.addEventListener("input", autoSave);
   });
 
-  // Add name input and remove button
-  const div = document.createElement("div");
-  div.id = pId+"Div";
-  div.innerHTML = `${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
+  const div=document.createElement("div"); div.id=pId+"Div";
+  div.innerHTML=`${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
                    <button onclick="removePerson('${pId}')">Remove</button>
                    <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>`;
   document.getElementById("personsDiv").appendChild(div);
-
-  document.getElementById("newPersonName").value = "";
-  drawCharts();
-  autoSave();
+  document.getElementById("newPersonName").value="";
+  refreshPersonView(); drawCharts(); autoSave();
 }
 
-// Remove person
 function removePerson(pId){
   if(persons.length<=1) return alert("At least one person required!");
-  const index = persons.indexOf(pId);
-  if(index!=-1) persons.splice(index,1);
+  const idx=persons.indexOf(pId); if(idx!==-1) persons.splice(idx,1);
   document.getElementById(pId+"Div").remove();
 
-  // Remove columns
-  const head = document.getElementById("tableHead");
+  const head=document.getElementById("tableHead");
   for(let i=head.children.length-1;i>=0;i--){
-    if(head.children[i].innerText.includes(pId+" CIE") || head.children[i].innerText.includes(pId+" SE")) head.children[i].remove();
+    if(head.children[i].innerText.includes(pId+" CIE")||head.children[i].innerText.includes(pId+" SE")) head.children[i].remove();
   }
-  const rows = document.querySelectorAll("#dataTable tr");
-  rows.forEach(row=>{
+  document.querySelectorAll("#dataTable tr").forEach(row=>{
     for(let i=row.children.length-1;i>=0;i--){
-      if(row.children[i].querySelector("input") && (row.children[i].querySelector("input").id==pId+"CIE" || row.children[i].querySelector("input").id==pId+"SE")) row.children[i].remove();
-      else if(i>=0 && row.children[i].querySelectorAll("input").length==2 && row.children[i].querySelectorAll("input")[0].id=="") row.children[i].remove();
+      if(row.children[i].querySelector("input")) row.children[i].remove();
     }
   });
-  drawCharts();
-  autoSave();
+  refreshPersonView(); drawCharts(); autoSave();
 }
 
-// Add person from load
 function addPersonByLoad(pId,name,color){
   persons.push(pId);
-  const th = document.createElement("th"); th.innerText = pId+" CIE";
-  const th2 = document.createElement("th"); th2.innerText = pId+" SE";
-  document.getElementById("tableHead").insertBefore(th, document.getElementById("tableHead").children[document.getElementById("tableHead").children.length-1]);
-  document.getElementById("tableHead").insertBefore(th2, document.getElementById("tableHead").children[document.getElementById("tableHead").children.length-1]);
+  const th=document.createElement("th"); th.innerText=name+" CIE";
+  const th2=document.createElement("th"); th2.innerText=name+" SE";
+  const head=document.getElementById("tableHead");
+  head.insertBefore(th, head.children[head.children.length-1]);
+  head.insertBefore(th2, head.children[head.children.length-1]);
 
-  const div = document.createElement("div");
-  div.id = pId+"Div";
-  div.innerHTML = `${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
+  const div=document.createElement("div"); div.id=pId+"Div";
+  div.innerHTML=`${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
                    <button onclick="removePerson('${pId}')">Remove</button>
                    <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>`;
   document.getElementById("personsDiv").appendChild(div);
 }
 
-// Draw charts
-function drawCharts() {
-  const data = getTableData();
-  const subjects = data.map(d=>d.subject);
-  const graphType = document.getElementById("graphType").value;
+function drawCharts(){
+  const data=getTableData();
+  const subjects=data.map(d=>d.subject);
+  const graphType=document.getElementById("graphType").value;
 
-  const datasetsCIE = persons.map(p=>{
-    const color = document.getElementById(p+"Color").value;
-    return {label: document.getElementById(p+"Name").value+" CIE", data:data.map(d=>d[p+"_cie"]), borderColor:color, backgroundColor:color, fill:false};
+  const datasetsCIE=persons.map(p=>{
+    const color=document.getElementById(p+"Color").value;
+    return {label:document.getElementById(p+"Name").value+" CIE", data:data.map(d=>d[p+"_cie"]), borderColor:color, backgroundColor:color, fill:false};
   });
-  const datasetsSE = persons.map(p=>{
-    const color = document.getElementById(p+"Color").value;
-    return {label: document.getElementById(p+"Name").value+" SE", data:data.map(d=>d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
+  const datasetsSE=persons.map(p=>{
+    const color=document.getElementById(p+"Color").value;
+    return {label:document.getElementById(p+"Name").value+" SE", data:data.map(d=>d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
   });
-  const datasetsTotal = persons.map(p=>{
-    const color = document.getElementById(p+"Color").value;
-    return {label: document.getElementById(p+"Name").value+" Total", data:data.map(d=>d[p+"_cie"]+d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
+  const datasetsTotal=persons.map(p=>{
+    const color=document.getElementById(p+"Color").value;
+    return {label:document.getElementById(p+"Name").value+" Total", data:data.map(d=>d[p+"_cie"]+d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
   });
 
-  if(cieChart) cieChart.destroy();
-  if(seChart) seChart.destroy();
-  if(totalChart) totalChart.destroy();
-
-  cieChart = new Chart(document.getElementById("cieChart"), {type:graphType, data:{labels:subjects, datasets:datasetsCIE}});
-  seChart = new Chart(document.getElementById("seChart"), {type:graphType, data:{labels:subjects, datasets:datasetsSE}});
-  totalChart = new Chart(document.getElementById("totalChart"), {type:graphType, data:{labels:subjects, datasets:datasetsTotal}});
+  if(cieChart) cieChart.destroy(); if(seChart) seChart.destroy(); if(totalChart) totalChart.destroy();
+  cieChart=new Chart(document.getElementById("cieChart"),{type:graphType,data:{labels:subjects,datasets:datasetsCIE}});
+  seChart=new Chart(document.getElementById("seChart"),{type:graphType,data:{labels:subjects,datasets:datasetsSE}});
+  totalChart=new Chart(document.getElementById("totalChart"),{type:graphType,data:{labels:subjects,datasets:datasetsTotal}});
 }
 
-// Export / Import
-function exportData() {
-  const tx = db.transaction("marks","readonly");
-  tx.objectStore("marks").get(1).onsuccess = e => {
-    if(!e.target.result) return;
-    const blob = new Blob([JSON.stringify(e.target.result)],{type:"application/json"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download="marks.json"; a.click();
-  };
-}
-function importData() {
-  const file = document.getElementById("importFile").files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    const data = JSON.parse(reader.result);
-    const tx = db.transaction("marks","readwrite");
-    const store = tx.objectStore("marks");
-    store.put(data);
-    tx.oncomplete = loadData;
-  };
-  reader.readAsText(file);
-}
-
-// Dark/Light mode
+function exportData(){ const tx=db.transaction("marks","readonly"); tx.objectStore("marks").get(1).onsuccess=e=>{ if(!e.target.result) return; const blob=new Blob([JSON.stringify(e.target.result)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="marks.json"; a.click(); }; }
+function importData(){ const file=document.getElementById("importFile").files[0]; const reader=new FileReader(); reader.onload=()=>{ const data=JSON.parse(reader.result); const tx=db.transaction("marks","readwrite"); tx.objectStore("marks").put(data); tx.oncomplete=loadData; }; reader.readAsText(file); }
 function toggleMode(){document.body.classList.toggle("dark");document.body.classList.toggle("light");}
+
+// --- View Marks Feature ---
+function updatePersonViewOptions(){
+  const select=document.getElementById("viewPerson"); select.innerHTML='<option value="all">All</option>';
+  persons.forEach(p=>{ const opt=document.createElement("option"); opt.value=p; opt.text=document.getElementById(p+"Name").value; select.appendChild(opt); });
+}
+
+function updateTableView(){
+  const selected=document.getElementById("viewPerson").value;
+  const head=document.getElementById("tableHead");
+  const rows=document.querySelectorAll("#dataTable tr");
+  persons.forEach(p=>{
+    let cieIdx=-1, seIdx=-1;
+    Array.from(head.children).forEach((th, idx)=>{ if(th.innerText===document.getElementById(p+"Name").value+" CIE") cieIdx=idx; if(th.innerText===document.getElementById(p+"Name").value+" SE") seIdx=idx; });
+    if(cieIdx===-1||seIdx===-1) return;
+    const display=(selected==="all"||selected===p)?"":"none";
+    head.children[cieIdx].style.display=display; head.children[seIdx].style.display=display;
+    rows.forEach(row=>{ row.children[cieIdx].style.display=display; row.children[seIdx].style.display=display; });
+  });
+  showSumMarks();
+}
+
+function refreshPersonView(){ updatePersonViewOptions(); updateTableView(); }
+
+function showHighestMarks(){
+  const data=getTableData(); const totals={}; persons.forEach(p=>{ totals[p]=data.reduce((sum,row)=>sum+row[p+"_cie"]+row[p+"_se"],0); });
+  let max=-1,winner=""; for(const p in totals){ if(totals[p]>max){ max=totals[p]; winner=document.getElementById(p+"Name").value; } }
+  document.getElementById("highestMarks").innerText="Highest Total Marks: "+winner+" ("+max+")";
+}
+
+function showSumMarks(){
+  const data=getTableData(); const selected=document.getElementById("viewPerson").value; const sums={};
+  persons.forEach(p=>{ if(selected!=="all" && selected!==p) return; sums[p]={cie:0,se:0,total:0}; data.forEach(r=>{ sums[p].cie+=r[p+"_cie"]; sums[p].se+=r[p+"_se"]; sums[p].total+=r[p+"_cie"]+r[p+"_se"]; }); });
+  let html=""; for(const p in sums){ html+=`${document.getElementById(p+"Name").value}: CIE=${sums[p].cie}, SE=${sums[p].se}, Total=${sums[p].total}<br>`; }
+  document.getElementById("sumMarks").innerHTML=html;
+}
+
+// Initialize on load
+window.onload = function() {
+  refreshPersonView(); // sets up view options and table visibility
+  drawCharts();        // draw initial charts
+  showHighestMarks();  // show initial highest scorer
+  showSumMarks();      // show initial sums
+};
 </script>
 </body>
 </html>

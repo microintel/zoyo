@@ -2,100 +2,353 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ZOYO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZOYO - Marks Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+/* -------------------- Colors & Theming -------------------- */
 :root {
-  --bg: #f4f6f9; --card: #ffffff; --text: #000000; --border: #dddddd; --btn: #2ecc71; --btnHover: #27ae60;
+  --bg: #f7f9fd; /* Light background */
+  --card: #ffffff; /* Card/Container background */
+  --text: #34495e; /* Dark text */
+  --text-secondary: #7f8c8d; /* Faded text */
+  --border: #ecf0f1; /* Light borders */
+  --primary: #3498db; /* Blue - Primary color */
+  --primary-hover: #2980b9;
+  --success: #2ecc71; /* Green */
+  --danger: #e74c3c; /* Red */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-body.dark { --bg: #121212; --card: #1e1e1e; --text: #ffffff; --border: #333; --btn: #3498db; --btnHover: #2980b9; }
-body { margin:0; padding:10px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); transition:0.3s; }
-.container { max-width:1000px; margin:auto; }
-.top-bar { display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:10px; }
-.mode-btn { background:var(--btn); color:#fff; border:none; padding:10px 15px; border-radius:10px; cursor:pointer; }
-table { width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; font-size:14px; }
-th, td { border:1px solid var(--border); padding:6px; text-align:center; }
-th { background:#3498db; color:#fff; }
-input { width:100%; max-width:70px; padding:5px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); }
-.btn-group { text-align:center; margin-top:10px; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
-button { padding:10px 15px; border-radius:10px; border:none; background:var(--btn); color:#fff; font-size:14px; cursor:pointer; }
-button:hover { background:var(--btnHover); }
-.delete-btn { background:#e74c3c; }
-canvas { background:var(--card); border-radius:15px; padding:10px; margin-top:10px; }
-footer { text-align:center; margin-top:20px; font-size:12px; opacity:0.7; }
-.color-picker { margin:0 5px; }
-#highestMarks { margin-top:10px; font-weight:bold; text-align:center; }
-#sumMarks { text-align:center; margin-top:10px; }
-@media (max-width:600px) { th, td { font-size:12px; padding:4px; } button { font-size:12px; padding:8px 10px; } h3 { font-size:14px; }
+body.dark {
+  --bg: #1e272e;
+  --card: #2f3640;
+  --text: #ecf0f1;
+  --text-secondary: #bdc3c7;
+  --border: #4a545d;
+  --primary: #3498db;
+  --primary-hover: #2980b9;
+  --success: #27ae60;
+  --danger: #c0392b;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* -------------------- Base Styling -------------------- */
+body {
+  margin: 0;
+  padding: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s, color 0.4s;
+  line-height: 1.6;
+}
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 5px;
+}
+h3 {
+  color: var(--primary);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 5px;
+  margin-top: 20px;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* -------------------- Top Bar -------------------- */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.mode-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+.mode-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* -------------------- Form/Controls Styling -------------------- */
+input[type="text"], input[type="number"], select, textarea {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  transition: border-color 0.3s, background-color 0.3s;
+  box-sizing: border-box;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  outline: none;
+}
+input[type="number"] { width: 100%; max-width: 60px; text-align: center; } /* Table numbers */
+input[type="color"] { border: 1px solid var(--border); border-radius: 6px; height: 32px; width: 32px; vertical-align: middle; }
+
+/* Person Controls Area */
+#personsDiv, .top-control-group {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 15px;
+  text-align: center;
+}
+#personsDiv > div, .top-control-group > div {
+  margin: 8px 0;
+  display: block; /* Stack on mobile */
+}
+.color-picker { margin: 0 5px; }
+
+/* Buttons */
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: var(--success);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.1s;
+}
+button:hover {
+  background: var(--primary-hover);
+}
+button:active {
+  transform: scale(0.98);
+}
+.delete-btn { background: var(--danger); }
+.delete-btn:hover { background: #c0392b; }
+.btn-group {
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* -------------------- Table Styling -------------------- */
+.table-container {
+  overflow-x: auto; /* Make table horizontally scrollable */
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+table {
+  width: 100%;
+  min-width: 600px; /* Ensure table minimum width for scrolling */
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 10px;
+  text-align: center;
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  position: sticky; /* Keep Subject column visible */
+  left: 0;
+  z-index: 10;
+}
+#marksTable thead th:first-child { background: var(--primary-hover); z-index: 20; }
+#marksTable tbody td:first-child {
+  background: var(--bg);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  font-weight: bold;
+}
+/* Adjust sticky background for dark/light mode */
+body.dark #marksTable tbody td:first-child { background: var(--card); }
+body.light #marksTable tbody td:first-child { background: var(--card); }
+
+
+/* Hover effects */
+tr:hover { background: rgba(52, 152, 219, 0.1) !important; }
+th:hover, td:hover { background: rgba(52, 152, 219, 0.2) !important; transition: background 0.1s; }
+
+
+/* -------------------- Stats & Paste Area -------------------- */
+#highestMarks, #sumMarks {
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px;
+  background: var(--card);
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+}
+#sumMarks {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+#pasteData {
+  width: 100%;
+  max-width: 600px;
+  height: 100px;
+  border-radius: 10px;
+  padding: 10px;
+  resize: vertical;
+}
+
+/* -------------------- Charts -------------------- */
+canvas {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 15px;
+  box-shadow: var(--shadow);
+}
+
+/* -------------------- Footer -------------------- */
+footer {
+  text-align: center;
+  margin-top: 30px;
+  padding: 10px 0;
+  font-size: 0.8em;
+  color: var(--text-secondary);
+}
+
+/* -------------------- Mobile Optimizations -------------------- */
+@media (max-width: 768px) {
+  body { padding: 10px; }
+  .mode-btn { margin-top: 10px; }
+  .top-bar > div { margin-bottom: 10px; }
+  h3 { font-size: 1.3em; }
+
+  /* Adjustments for controls on smaller screens */
+  #personsDiv > div, .top-control-group > div {
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  #personsDiv > div:last-child { border-bottom: none; }
+  
+  /* Table cell size */
+  th, td { font-size: 12px; padding: 6px 4px; }
+  button { font-size: 12px; padding: 8px 12px; }
+  input[type="number"] { max-width: 50px; }
+
+  .btn-group button { width: calc(50% - 10px); margin: 5px 0; }
+  .btn-group input[type="file"] { width: 0; } /* Hide file input ghost */
+  
+  /* Ensure graph type and view marks dropdowns are full width */
+  .top-control-group select { width: 100%; }
+}
+
+label input{
+padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid grey;
+  background: var(--card);
+  color: var(--text);
+  transition: border-color 0.3s, background-color 0.3s;
+  box-sizing: border-box;
+
 }
 </style>
 </head>
 <body class="light">
 <div class="container">
+
 <div class="top-bar">
   <div><h3>< COMP ></h3></div>
-  <button class="mode-btn" onclick="toggleMode()">Dark / Light</button>
+  <button class="mode-btn" onclick="toggleMode()">Dark / Light 🌙</button>
 </div>
 
-<div id="personsDiv" style="text-align:center; margin-bottom:10px;">
-  P1 Name: <input id="p1Name" value="P1">
-  <button onclick="removePerson('p1')">Remove</button>
-  <input type="color" id="p1Color" class="color-picker" value="#ff6384" onchange="drawCharts()">
-  P2 Name: <input id="p2Name" value="P2">
-  <button onclick="removePerson('p2')">Remove</button>
-  <input type="color" id="p2Color" class="color-picker" value="#36a2eb" onchange="drawCharts()">
+<div id="personsDiv">
+  <div>
+    <label>P1 Name: <input id="p1Name" value="P1" oninput="autoSave()"></label>
+    <button class="delete-btn" onclick="removePerson('p1')">Rem</button>
+    <input type="color" id="p1Color" class="color-picker" value="#ff6384" onchange="drawCharts()">
+    <label><input id="p1Hide" type="checkbox" checked onchange="togglePersonVisibility('p1')"> Hide/Show</label>
+  </div>
+  <div>
+    <label>P2 Name: <input id="p2Name" value="P2" oninput="autoSave()"></label>
+    <button class="delete-btn" onclick="removePerson('p2')">Remove</button>
+    <input type="color" id="p2Color" class="color-picker" value="#36a2eb" onchange="drawCharts()">
+    <label><input id="p2Hide" type="checkbox" checked onchange="togglePersonVisibility('p2')"> Hide/Show</label>
+  </div>
 </div>
 
-<div style="text-align:center; margin-bottom:10px;">
-  Add Person: <input id="newPersonName" placeholder="Enter Name">
-  <input type="color" id="newPersonColor" value="#ffce56">
-  <button onclick="addPerson()">Add</button>
+<div class="top-control-group">
+  <div>
+    Add Person: <input id="newPersonName" placeholder="Enter Name">
+    <input type="color" id="newPersonColor" value="#ffce56">
+    <button onclick="addPerson()">➕ Add</button>
+  </div>
+  <hr style="border: none; border-top: 1px solid var(--border); margin: 10px 0;">
+  <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+    <div style="padding: 5px;">
+      Graph Type:
+      <select id="graphType" onchange="drawCharts()">
+        <option value="bar">Bar (Column)</option>
+        <option value="line">Line</option>
+      </select>
+    </div>
+    <div style="padding: 5px;">
+      View Marks:
+      <select id="viewPerson" onchange="updateTableView()"><option value="all">All</option></select>
+    </div>
+  </div>
 </div>
 
-<div style="text-align:center; margin-bottom:10px;">
-  Graph Type:
-  <select id="graphType" onchange="drawCharts()">
-    <option value="bar">Bar (Column)</option>
-    <option value="line">Line</option>
-  </select>
-</div>
+<div id="hideControls" style="text-align:center; margin-bottom:15px; font-size: 0.9em; color: var(--text-secondary);"></div>
 
-<div style="text-align:center; margin-bottom:10px;">
-  View Marks:
-  <select id="viewPerson" onchange="updateTableView()"><option value="all">All</option></select>
+<div class="table-container">
+  <table id="marksTable">
+    <thead>
+      <tr id="tableHead">
+        <th>Subject</th>
+        <th>P1 CIE</th>
+        <th>P1 SE</th>
+        <th>P2 CIE</th>
+        <th>P2 SE</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="dataTable">
+      <tr>
+        <td><input value="C" oninput="autoSave()"></td>
+        <td><input type="number" value="0" oninput="autoSave()"></td>
+        <td><input type="number" value="0" oninput="autoSave()"></td>
+        <td><input type="number" value="0" oninput="autoSave()"></td>
+        <td><input type="number" value="0" oninput="autoSave()"></td>
+        <td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-
-<table>
-  <thead>
-    <tr id="tableHead">
-      <th>Subject</th>
-      <th>P1 CIE</th>
-      <th>P1 SE</th>
-      <th>P2 CIE</th>
-      <th>P2 SE</th>
-      <th>Delete</th>
-    </tr>
-  </thead>
-  <tbody id="dataTable">
-    <tr>
-      <td><input value="C"></td>
-      <td><input type="number" value="0"></td>
-      <td><input type="number" value="0"></td>
-      <td><input type="number" value="0"></td>
-      <td><input type="number" value="0"></td>
-      <td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>
-    </tr>
-  </tbody>
-</table>
 
 <div id="highestMarks"></div>
 <div id="sumMarks"></div>
 
 <div class="btn-group">
-  <button onclick="addRow()">Add Subject</button>
-  <button onclick="exportData()">Export</button>
+  <button onclick="addRow()">➕ Add Subject</button>
+  <button onclick="exportData()">💾 Export</button>
   <input type="file" id="importFile" hidden onchange="importData()">
-  <button onclick="document.getElementById('importFile').click()">Import</button>
+  <button onclick="document.getElementById('importFile').click()">📤 Import</button>
+</div>
+
+<div style="text-align:center; margin-top:20px; padding: 15px; background: var(--card); border-radius: 12px; box-shadow: var(--shadow);">
+  <textarea id="pasteData" placeholder="Paste JSON data here..."
+    style="width:90%; max-width:500px; height:80px;"></textarea><br>
+  <button onclick="importFromPaste()">📥 Import From Paste</button>
 </div>
 
 <h3>CIE Graph</h3>
@@ -109,201 +362,535 @@ footer { text-align:center; margin-top:20px; font-size:12px; opacity:0.7; }
 </div>
 
 <script>
+/* --------------------
+   Data & charts state (The JavaScript logic remains unchanged)
+   -------------------- */
 let db, cieChart, seChart, totalChart;
-let persons=["p1","p2"];
-
+let persons=["p1","p2"];         // current person IDs (p1, p2, p3...)
+let hiddenPersons={};           // track hide/show checkboxes (true = hidden)
 const request=indexedDB.open("MarksDB",1);
-request.onupgradeneeded=e=>{ db=e.target.result; db.createObjectStore("marks",{keyPath:"id"}); };
-request.onsuccess=e=>{ db=e.target.result; loadData(); };
 
-function addRow(){
-  const row=document.createElement("tr");
-  let cells=`<td><input></td>`;
-  persons.forEach(p=>{ cells+=`<td><input type="number" value="0"></td><td><input type="number" value="0"></td>`; });
-  cells+=`<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
-  row.innerHTML=cells;
-  document.getElementById("dataTable").appendChild(row);
-  attachAutoSave(row);
-}
+/* --------------------
+   IndexedDB setup
+   -------------------- */
+request.onupgradeneeded = e => {
+  db = e.target.result;
+  if(!db.objectStoreNames.contains("marks")) db.createObjectStore("marks",{keyPath:"id"});
+};
+request.onsuccess = e => { db=e.target.result; loadData(); };
+request.onerror = e => console.error("DB error", e);
 
-function deleteRow(btn){ btn.parentElement.parentElement.remove(); autoSave(); }
-
-function autoSave(){
-  const data=getTableData();
-  const names={}; persons.forEach(p=>{ const ni=document.getElementById(p+"Name"); if(ni) names[p]=ni.value; });
-  const colors={}; persons.forEach(p=>{ const ci=document.getElementById(p+"Color"); if(ci) colors[p]=ci.value; });
-  const tx=db.transaction("marks","readwrite");
-  tx.objectStore("marks").put({id:1,data,names,colors});
-  drawCharts(); showHighestMarks(); showSumMarks(); updateTableView();
-}
-
+/* --------------------
+   Utilities: Table data
+   -------------------- */
 function getTableData(){
   const rows=document.querySelectorAll("#dataTable tr");
   return Array.from(rows).map(row=>{
-    const i=row.querySelectorAll("input");
-    const obj={subject:i[0].value}; let idx=1;
-    persons.forEach(p=>{ obj[p+"_cie"]=+i[idx++].value; obj[p+"_se"]=+i[idx++].value; });
+    const inputs=row.querySelectorAll("input");
+    const obj={subject:inputs[0].value};
+    let idx=1;
+    persons.forEach(p=>{
+      // protect against missing inputs if columns changed
+      const cie = inputs[idx] ? +inputs[idx].value : 0; idx++;
+      const se  = inputs[idx] ? +inputs[idx].value : 0; idx++;
+      obj[p+"_cie"]=cie; obj[p+"_se"]=se;
+    });
     return obj;
   });
 }
 
-function loadData(){
-  const tx=db.transaction("marks","readonly");
-  tx.objectStore("marks").get(1).onsuccess=e=>{
-    if(!e.target.result) return;
-    const data=e.target.result.data;
-    const names=e.target.result.names;
-    const colors=e.target.result.colors;
-    Object.keys(names).forEach(p=>{
-      if(!persons.includes(p)) addPersonByLoad(p,names[p], colors[p]||'#'+Math.floor(Math.random()*16777215).toString(16));
-      else { document.getElementById(p+"Name").value=names[p]; if(colors[p]) document.getElementById(p+"Color").value=colors[p]; }
-    });
-    const tbody=document.getElementById("dataTable"); tbody.innerHTML="";
-    data.forEach(d=>{
-      const row=document.createElement("tr");
-      let cells=`<td><input value="${d.subject}"></td>`;
-      persons.forEach(p=>{ cells+=`<td><input type="number" value="${d[p+"_cie"]}"></td><td><input type="number" value="${d[p+"_se"]}"></td>`; });
-      cells+=`<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
-      row.innerHTML=cells; tbody.appendChild(row); attachAutoSave(row);
-    });
-    drawCharts(); refreshPersonView(); showHighestMarks(); showSumMarks();
-  };
+/* --------------------
+   Auto-save & attach
+   -------------------- */
+function attachAutoSave(row){
+  row.querySelectorAll("input").forEach(i=> i.addEventListener("input", autoSave) );
+}
+function autoSave(){
+  const data=getTableData();
+  const names={}, colors={};
+  persons.forEach(p=>{
+    const ni=document.getElementById(p+"Name"); const ci=document.getElementById(p+"Color");
+    names[p]=ni?ni.value: p.toUpperCase();
+    colors[p]=ci?ci.value:'#'+Math.floor(Math.random()*16777215).toString(16);
+  });
+  const tx=db.transaction("marks","readwrite");
+  tx.objectStore("marks").put({id:1,data,names,colors});
+  tx.oncomplete = ()=>{ drawCharts(); showHighestMarks(); showSumMarks(); setupHideControls(); };
 }
 
-function attachAutoSave(row){ row.querySelectorAll("input").forEach(i=>i.addEventListener("input",autoSave)); }
+/* --------------------
+   Row operations
+   -------------------- */
+function addRow(){
+  const row=document.createElement("tr");
+  let cells=`<td><input oninput="autoSave()"></td>`;
+  persons.forEach(()=>{ cells += `<td><input type="number" value="0" oninput="autoSave()"></td><td><input type="number" value="0" oninput="autoSave()"></td>`; });
+  cells+=`<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
+  row.innerHTML=cells;
+  document.getElementById("dataTable").appendChild(row);
+  attachAutoSave(row); // Note: inputs now have autoSave added in the innerHTML for single row initial loads too.
+  autoSave();
+}
 
+function deleteRow(btn){
+  btn.closest("tr").remove();
+  autoSave();
+}
+
+/* --------------------
+   Person add/remove
+   -------------------- */
 function addPerson(){
-  const name=document.getElementById("newPersonName").value.trim();
+  const nameEl=document.getElementById("newPersonName");
+  const colorEl=document.getElementById("newPersonColor");
+  const name=nameEl.value.trim();
   if(!name) return alert("Enter a name!");
-  const color=document.getElementById("newPersonColor").value;
-  const pId="p"+(persons.length+1); persons.push(pId);
+  const color=colorEl.value;
+  const pId="p"+(persons.length+1);
+  persons.push(pId);
 
-  const th=document.createElement("th"); th.innerText=name+" CIE";
-  const th2=document.createElement("th"); th2.innerText=name+" SE";
+  // add headers for new person (CIE, SE) before Delete column
   const head=document.getElementById("tableHead");
-  head.insertBefore(th, head.children[head.children.length-1]);
-  head.insertBefore(th2, head.children[head.children.length-1]);
+  const deleteTh = head.lastElementChild; // 'Delete' th
+  const thC=document.createElement("th"); thC.innerText=name+" CIE";
+  const thS=document.createElement("th"); thS.innerText=name+" SE";
+  head.insertBefore(thC, deleteTh);
+  head.insertBefore(thS, deleteTh);
 
+  // add inputs for each existing row
   document.querySelectorAll("#dataTable tr").forEach(row=>{
-    const cieInput=document.createElement("input"); cieInput.type="number"; cieInput.value=0;
-    const seInput=document.createElement("input"); seInput.type="number"; seInput.value=0;
-    row.insertBefore(cieInput, row.children[row.children.length-1]);
-    row.insertBefore(seInput, row.children[row.children.length-1]);
-    cieInput.addEventListener("input", autoSave);
-    seInput.addEventListener("input", autoSave);
+    const cie=document.createElement("input"); cie.type="number"; cie.value=0; cie.setAttribute("oninput", "autoSave()");
+    const se =document.createElement("input"); se.type="number"; se.value=0; se.setAttribute("oninput", "autoSave()");
+    const tdC=document.createElement("td"); tdC.appendChild(cie);
+    const tdS=document.createElement("td"); tdS.appendChild(se);
+    row.insertBefore(tdC, row.lastElementChild);
+    row.insertBefore(tdS, row.lastElementChild);
+    // Note: attachAutoSave(row) on new rows is needed for the initial subject input too, but the one above will catch it.
+    // However, the inputs created here need the event listener added (which autoSave() handles if we call it at the end).
   });
 
-  const div=document.createElement("div"); div.id=pId+"Div";
-  div.innerHTML=`${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
-                   <button onclick="removePerson('${pId}')">Remove</button>
-                   <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>`;
-  document.getElementById("personsDiv").appendChild(div);
-  document.getElementById("newPersonName").value="";
-  refreshPersonView(); drawCharts(); autoSave();
+  // add person controls UI
+  const divWrapper=document.createElement("div"); divWrapper.id=pId+"Div";
+  divWrapper.innerHTML = `<label>${name} Name: <input id='${pId}Name' value='${name}' oninput='autoSave()'></label>
+                          <button class="delete-btn" onclick="removePerson('${pId}')">Remove</button>
+                          <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>
+                          <label><input id='${pId}Hide' type='checkbox' checked onchange="togglePersonVisibility('${pId}')"> Hide/Show</label>`;
+  document.getElementById("personsDiv").appendChild(divWrapper);
+
+  // clear inputs and update everything
+  nameEl.value="";
+  refreshPersonView();
+  drawCharts();
+  autoSave(); // autoSave() now also saves the person names/colors
 }
 
 function removePerson(pId){
   if(persons.length<=1) return alert("At least one person required!");
-  const idx=persons.indexOf(pId); if(idx!==-1) persons.splice(idx,1);
-  document.getElementById(pId+"Div").remove();
-
+  const idx=persons.indexOf(pId); if(idx===-1) return;
+  persons.splice(idx,1);
+  // remove person UI
+  const div=document.getElementById(pId+"Div"); if(div) div.remove();
+  // remove header th for CIE & SE of that person
   const head=document.getElementById("tableHead");
+  // find children with innerText matching pattern "<name> CIE" or "<name> SE"
+  const nameEl=document.getElementById(pId+"Name");
+  const pname = nameEl? nameEl.value : pId;
   for(let i=head.children.length-1;i>=0;i--){
-    if(head.children[i].innerText.includes(pId+" CIE")||head.children[i].innerText.includes(pId+" SE")) head.children[i].remove();
+    const t = head.children[i].innerText;
+    if(t === pname+" CIE" || t === pname+" SE") head.children[i].remove();
   }
-  document.querySelectorAll("#dataTable tr").forEach(row=>{
-    for(let i=row.children.length-1;i>=0;i--){
-      if(row.children[i].querySelector("input")) row.children[i].remove();
-    }
-  });
-  refreshPersonView(); drawCharts(); autoSave();
+  // Rebuild table rows to keep alignment correct
+  rebuildRowsAfterPersonChange();
+  refreshPersonView();
+  drawCharts();
+  autoSave();
 }
 
 function addPersonByLoad(pId,name,color){
+  // Add person silently during load (no new row cell insertion here — loadData will rebuild rows).
   persons.push(pId);
   const th=document.createElement("th"); th.innerText=name+" CIE";
   const th2=document.createElement("th"); th2.innerText=name+" SE";
   const head=document.getElementById("tableHead");
   head.insertBefore(th, head.children[head.children.length-1]);
   head.insertBefore(th2, head.children[head.children.length-1]);
-
-  const div=document.createElement("div"); div.id=pId+"Div";
-  div.innerHTML=`${name}: <input id='${pId}Name' value='${name}' oninput='autoSave()'>
-                   <button onclick="removePerson('${pId}')">Remove</button>
-                   <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>`;
-  document.getElementById("personsDiv").appendChild(div);
+  const divWrapper=document.createElement("div"); divWrapper.id=pId+"Div";
+  divWrapper.innerHTML=`<label>${name} Name: <input id='${pId}Name' value='${name}' oninput='autoSave()'></label>
+                   <button class="delete-btn" onclick="removePerson('${pId}')">Remove</button>
+                   <input type="color" id='${pId}Color' class="color-picker" value='${color}' onchange='drawCharts()'>
+                   <label><input id='${pId}Hide' type='checkbox' checked onchange="togglePersonVisibility('${pId}')"> Hide/Show</label>`;
+  document.getElementById("personsDiv").appendChild(divWrapper);
 }
 
+/* --------------------
+   Rebuild table rows safely after person list changed
+   -------------------- */
+function rebuildRowsAfterPersonChange(){
+  // Use saved data if present, otherwise collect current subject values and zeros
+  const oldData = getTableData(); // contains subjects and any existing person fields
+  const tbody=document.getElementById("dataTable");
+  tbody.innerHTML="";
+  oldData.forEach(old=>{
+    const tr=document.createElement("tr");
+    let html=`<td><input value="${old.subject}" oninput="autoSave()"></td>`;
+    // for each current person, pick value from old if exists, else 0
+    persons.forEach(p=>{
+      const cieVal = (old[p+"_cie"] !== undefined) ? old[p+"_cie"] : 0;
+      const seVal  = (old[p+"_se"] !== undefined) ? old[p+"_se"] : 0;
+      html += `<td><input type="number" value="${cieVal}" oninput="autoSave()"></td><td><input type="number" value="${seVal}" oninput="autoSave()"></td>`;
+    });
+    html += `<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
+    tr.innerHTML=html;
+    tbody.appendChild(tr);
+    // attachAutoSave is now mainly for subject input, as number inputs have 'oninput' directly.
+    attachAutoSave(tr);
+  });
+}
+
+/* --------------------
+   Load from IndexedDB
+   -------------------- */
+function loadData(){
+  const tx=db.transaction("marks","readonly");
+  const req=tx.objectStore("marks").get(1);
+  req.onsuccess = e=>{
+    if(!e.target.result) {
+      // No saved data -> just attach autosave to existing row(s)
+      document.querySelectorAll("#dataTable tr").forEach(r=>attachAutoSave(r));
+      refreshPersonView();
+      drawCharts();
+      showHighestMarks();
+      showSumMarks();
+      return;
+    }
+    const stored=e.target.result;
+    const data=stored.data || [];
+    const names=stored.names || {};
+    const colors=stored.colors || {};
+
+    // Reset persons to default then add any stored persons
+    persons=[];
+    // Clear UI personsDiv and table head/body, then reconstruct
+    document.getElementById("personsDiv").innerHTML="";
+    // always ensure base persons appear first for backwards compatibility
+    if(!names.p1){ names.p1 = 'P1'; colors.p1 = colors.p1 || '#ff6384'; }
+    if(!names.p2){ names.p2 = 'P2'; colors.p2 = colors.p2 || '#36a2eb'; }
+    // Create person divs based on names object keys in insertion order p1, p2, then any others
+    const order = Object.keys(names).length ? Object.keys(names) : ['p1','p2'];
+    // ensure persons list matches stored keys
+    order.forEach(k => { if(k) persons.push(k); });
+
+    // Build person controls area
+    const personsDiv = document.getElementById("personsDiv");
+    personsDiv.innerHTML = "";
+    persons.forEach(p=>{
+      const d=document.createElement("div"); d.id=p+"Div";
+      d.innerHTML = `<label>${names[p]||p} Name: <input id='${p}Name' value='${names[p]||p}' oninput='autoSave()'></label>
+                     <button class="delete-btn" onclick="removePerson('${p}')">Remove</button>
+                     <input type="color" id='${p}Color' class="color-picker" value='${colors[p]||'#'+Math.floor(Math.random()*16777215).toString(16)}' onchange='drawCharts()'>
+                     <label><input id='${p}Hide' type='checkbox' checked onchange="togglePersonVisibility('${p}')"> Hide/Show</label>`;
+      personsDiv.appendChild(d);
+    });
+
+    // Rebuild table header
+    const head = document.getElementById("tableHead");
+    head.innerHTML = "<th>Subject</th>";
+    persons.forEach(p=>{ const nameText = (names[p]||p).toString(); head.innerHTML += `<th>${nameText} CIE</th><th>${nameText} SE</th>`; });
+    head.innerHTML += "<th>Delete</th>";
+
+    // Build rows from data
+    const tbody=document.getElementById("dataTable"); tbody.innerHTML="";
+    data.forEach(d=>{
+      const tr=document.createElement("tr");
+      let html=`<td><input value="${d.subject}" oninput="autoSave()"></td>`;
+      persons.forEach(p=>{
+        const cie = d[p+"_cie"] !== undefined ? d[p+"_cie"] : 0;
+        const se  = d[p+"_se"] !== undefined ? d[p+"_se"] : 0;
+        html += `<td><input type="number" value="${cie}" oninput="autoSave()"></td><td><input type="number" value="${se}" oninput="autoSave()"></td>`;
+      });
+      html += `<td><button class="delete-btn" onclick="deleteRow(this)">X</button></td>`;
+      tr.innerHTML=html; tbody.appendChild(tr); attachAutoSave(tr);
+    });
+
+    // Update charts and views
+    drawCharts();
+    refreshPersonView();
+    showHighestMarks();
+    showSumMarks();
+  };
+}
+
+/* --------------------
+   Chart drawing
+   -------------------- */
 function drawCharts(){
   const data=getTableData();
-  const subjects=data.map(d=>d.subject);
+  const subjects=data.map(d=>d.subject||"");
   const graphType=document.getElementById("graphType").value;
 
-  const datasetsCIE=persons.map(p=>{
-    const color=document.getElementById(p+"Color").value;
-    return {label:document.getElementById(p+"Name").value+" CIE", data:data.map(d=>d[p+"_cie"]), borderColor:color, backgroundColor:color, fill:false};
-  });
-  const datasetsSE=persons.map(p=>{
-    const color=document.getElementById(p+"Color").value;
-    return {label:document.getElementById(p+"Name").value+" SE", data:data.map(d=>d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
-  });
-  const datasetsTotal=persons.map(p=>{
-    const color=document.getElementById(p+"Color").value;
-    return {label:document.getElementById(p+"Name").value+" Total", data:data.map(d=>d[p+"_cie"]+d[p+"_se"]), borderColor:color, backgroundColor:color, fill:false};
+  // Filter datasets based on person visibility checkbox
+  const visiblePersons = persons.filter(p => {
+    const cb = document.getElementById(p + 'Hide');
+    return cb ? cb.checked : true; // checked = visible
   });
 
-  if(cieChart) cieChart.destroy(); if(seChart) seChart.destroy(); if(totalChart) totalChart.destroy();
-  cieChart=new Chart(document.getElementById("cieChart"),{type:graphType,data:{labels:subjects,datasets:datasetsCIE}});
-  seChart=new Chart(document.getElementById("seChart"),{type:graphType,data:{labels:subjects,datasets:datasetsSE}});
-  totalChart=new Chart(document.getElementById("totalChart"),{type:graphType,data:{labels:subjects,datasets:datasetsTotal}});
+  const datasetsCIE = visiblePersons.map(p=>{
+    const nameEl=document.getElementById(p+"Name");
+    const label = nameEl? nameEl.value+" CIE": p+" CIE";
+    const colorEl=document.getElementById(p+"Color");
+    const color = colorEl? colorEl.value : '#'+Math.floor(Math.random()*16777215).toString(16);
+    return { label, data: data.map(d=>d[p+"_cie"]||0), borderColor: color, backgroundColor: color, fill:graphType==='line'?false:true };
+  });
+  const datasetsSE = visiblePersons.map(p=>{
+    const nameEl=document.getElementById(p+"Name");
+    const label = nameEl? nameEl.value+" SE": p+" SE";
+    const colorEl=document.getElementById(p+"Color");
+    const color = colorEl? colorEl.value : '#'+Math.floor(Math.random()*16777215).toString(16);
+    return { label, data: data.map(d=>d[p+"_se"]||0), borderColor: color, backgroundColor: color, fill:graphType==='line'?false:true };
+  });
+  const datasetsTotal = visiblePersons.map(p=>{
+    const nameEl=document.getElementById(p+"Name");
+    const label = nameEl? nameEl.value+" Total": p+" Total";
+    const colorEl=document.getElementById(p+"Color");
+    const color = colorEl? colorEl.value : '#'+Math.floor(Math.random()*16777215).toString(16);
+    return { label, data: data.map(d=>(d[p+"_cie"]||0) + (d[p+"_se"]||0)), borderColor: color, backgroundColor: color, fill:graphType==='line'?false:true };
+  });
+
+  if(cieChart) cieChart.destroy();
+  if(seChart) seChart.destroy();
+  if(totalChart) totalChart.destroy();
+
+  // Common chart options for responsive design
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      y: { beginAtZero: true }
+    },
+    plugins: {
+      legend: { position: 'top' }
+    }
+  };
+
+  cieChart = new Chart(document.getElementById("cieChart"), { type:graphType, data:{ labels:subjects, datasets:datasetsCIE }, options: chartOptions });
+  seChart  = new Chart(document.getElementById("seChart"),  { type:graphType, data:{ labels:subjects, datasets:datasetsSE }, options: chartOptions });
+  totalChart = new Chart(document.getElementById("totalChart"), { type:graphType, data:{ labels:subjects, datasets:datasetsTotal }, options: chartOptions });
 }
 
-function exportData(){ const tx=db.transaction("marks","readonly"); tx.objectStore("marks").get(1).onsuccess=e=>{ if(!e.target.result) return; const blob=new Blob([JSON.stringify(e.target.result)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="marks.json"; a.click(); }; }
-function importData(){ const file=document.getElementById("importFile").files[0]; const reader=new FileReader(); reader.onload=()=>{ const data=JSON.parse(reader.result); const tx=db.transaction("marks","readwrite"); tx.objectStore("marks").put(data); tx.oncomplete=loadData; }; reader.readAsText(file); }
-function toggleMode(){document.body.classList.toggle("dark");document.body.classList.toggle("light");}
+/* --------------------
+   Export / Import (file)
+   -------------------- */
+function exportData(){
+  const tx=db.transaction("marks","readonly");
+  tx.objectStore("marks").get(1).onsuccess=e=>{
+    if(!e.target.result) return;
+    const blob=new Blob([JSON.stringify(e.target.result)],{type:"application/json"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="marks.json"; a.click();
+  };
+}
 
-// --- View Marks Feature ---
+function importData(){
+  const file=document.getElementById("importFile").files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const tx=db.transaction("marks","readwrite");
+      tx.objectStore("marks").put(data);
+      tx.oncomplete=loadData;
+    }catch(err){ alert("Invalid JSON file"); }
+  };
+  reader.readAsText(file);
+}
+
+/* --------------------
+   Import from pasted JSON
+   -------------------- */
+function importFromPaste(){
+  const text=document.getElementById("pasteData").value.trim();
+  if(!text) return alert("Paste data first");
+  try{
+    const data=JSON.parse(text);
+    const tx=db.transaction("marks","readwrite");
+    tx.objectStore("marks").put(data);
+    tx.oncomplete=loadData;
+  }catch(err){ alert("Invalid JSON pasted"); }
+}
+
+/* --------------------
+   View / Hide persons controls
+   -------------------- */
 function updatePersonViewOptions(){
-  const select=document.getElementById("viewPerson"); select.innerHTML='<option value="all">All</option>';
-  persons.forEach(p=>{ const opt=document.createElement("option"); opt.value=p; opt.text=document.getElementById(p+"Name").value; select.appendChild(opt); });
+  const select=document.getElementById("viewPerson");
+  select.innerHTML='<option value="all">All</option>';
+  persons.forEach(p=>{
+    const nameEl=document.getElementById(p+"Name");
+    const label = nameEl? nameEl.value : p;
+    const opt=document.createElement("option");
+    opt.value=p; opt.text=label; select.appendChild(opt);
+  });
 }
 
+function togglePersonVisibility(p){
+  // checkbox id is p + 'Hide'
+  const cb=document.getElementById(p+"Hide");
+  hiddenPersons[p]= !cb.checked; // checked -> visible; unchecked -> hidden
+  // If using previous logic (toggle flips), ensure consistent: here cb.checked === visible
+  updateTableView();
+  drawCharts();
+}
+
+function setupHideControls(){
+  const div=document.getElementById("hideControls");
+  div.innerHTML="<b>Filter : </b> ";
+  persons.forEach(p=>{
+    const label = document.getElementById(p+"Name") ? document.getElementById(p+"Name").value : p;
+    const checked = document.getElementById(p+"Hide") ? document.getElementById(p+"Hide").checked : true;
+    div.innerHTML += `<label style="margin:0 6px;"><input id='chk_${p}' type="checkbox" ${checked?'checked':''} onchange="(function(){ document.getElementById('${p}Hide').checked=this.checked; togglePersonVisibility('${p}'); }).call(this)">${label}</label>`;
+  });
+}
+
+/* Shows/hides columns according to `viewPerson` dropdown and hiddenPersons status */
 function updateTableView(){
   const selected=document.getElementById("viewPerson").value;
   const head=document.getElementById("tableHead");
   const rows=document.querySelectorAll("#dataTable tr");
+
+  // For each person, find their CIE/SE column indices by matching header text
   persons.forEach(p=>{
+    const nameEl=document.getElementById(p+"Name");
+    const name = nameEl? nameEl.value : p;
     let cieIdx=-1, seIdx=-1;
-    Array.from(head.children).forEach((th, idx)=>{ if(th.innerText===document.getElementById(p+"Name").value+" CIE") cieIdx=idx; if(th.innerText===document.getElementById(p+"Name").value+" SE") seIdx=idx; });
-    if(cieIdx===-1||seIdx===-1) return;
-    const display=(selected==="all"||selected===p)?"":"none";
-    head.children[cieIdx].style.display=display; head.children[seIdx].style.display=display;
-    rows.forEach(row=>{ row.children[cieIdx].style.display=display; row.children[seIdx].style.display=display; });
+    // Iterate over header cells to find the column index
+    Array.from(head.children).forEach((th, idx)=> {
+      // Need to use startsWith or check for exact match depending on how the header is rendered
+      if(th.innerText === name+" CIE") cieIdx = idx;
+      if(th.innerText === name+" SE")  seIdx  = idx;
+    });
+    // Fallback if full name not in header yet (shouldn't happen with current logic, but safe):
+    if(cieIdx === -1 || seIdx === -1) {
+        // Try searching for partial match in case name changes didn't update headers yet
+        Array.from(head.children).forEach((th, idx)=> {
+            if(th.innerText.includes(" CIE") && th.innerText.includes(name)) cieIdx = idx;
+            if(th.innerText.includes(" SE") && th.innerText.includes(name)) seIdx  = idx;
+        });
+    }
+
+    if(cieIdx === -1 || seIdx === -1) return; // skip if not found
+
+    // decide display: if selected is 'all' or selected === p, then keep unless person is hidden via checkbox
+    const personCheckbox = document.getElementById(p+"Hide");
+    const visibleByCheckbox = personCheckbox ? personCheckbox.checked : true; // checked means visible
+    
+    // Only show columns if 'all' is selected OR the person is specifically selected in the dropdown
+    const displayForView = (selected === "all" || selected === p) ? "" : "none";
+    
+    // Final display is "none" if it's hidden by the checkbox OR if it's not selected for view
+    const finalDisplay = (visibleByCheckbox && displayForView === "") ? "" : "none";
+
+    head.children[cieIdx].style.display = finalDisplay;
+    head.children[seIdx].style.display  = finalDisplay;
+    rows.forEach(row=>{
+      // protect if row shorter due to dynamic changes
+      if(row.children[cieIdx]) row.children[cieIdx].style.display = finalDisplay;
+      if(row.children[seIdx])  row.children[seIdx].style.display  = finalDisplay;
+    });
   });
+
+  // Ensure the Subject column and Delete column remain visible
+  head.children[0].style.display = ""; // Subject
+  head.children[head.children.length - 1].style.display = ""; // Delete
+  rows.forEach(row => {
+    row.children[0].style.display = ""; // Subject cell
+    row.children[row.children.length - 1].style.display = ""; // Delete button cell
+  });
+
+
   showSumMarks();
 }
 
-function refreshPersonView(){ updatePersonViewOptions(); updateTableView(); }
+/* Refresh person dropdown and table visibility */
+function refreshPersonView(){
+  updatePersonViewOptions();
+  updateTableView();
+  setupHideControls();
+}
 
+/* --------------------
+   Highest & sums
+   -------------------- */
 function showHighestMarks(){
-  const data=getTableData(); const totals={}; persons.forEach(p=>{ totals[p]=data.reduce((sum,row)=>sum+row[p+"_cie"]+row[p+"_se"],0); });
-  let max=-1,winner=""; for(const p in totals){ if(totals[p]>max){ max=totals[p]; winner=document.getElementById(p+"Name").value; } }
-  document.getElementById("highestMarks").innerText="Highest Total Marks: "+winner+" ("+max+")";
+  const data=getTableData();
+  const totals={}; persons.forEach(p=> totals[p]= data.reduce((s,r)=> s + (r[p+"_cie"]||0) + (r[p+"_se"]||0), 0));
+  let max=-1, winner=""; 
+  // Get max only for visible persons
+  persons.forEach(p => {
+    const cb = document.getElementById(p + 'Hide');
+    const isVisible = cb ? cb.checked : true;
+    if (isVisible && totals[p] > max) {
+      max = totals[p];
+      winner = document.getElementById(p + "Name") ? document.getElementById(p + "Name").value : p;
+    }
+  });
+
+  if (winner) {
+     document.getElementById("highestMarks").innerHTML = `Highest Visible Total Marks : ${winner} (${max})`;
+  } else {
+     document.getElementById("highestMarks").innerHTML = `No visible persons with data.`;
+  }
 }
 
 function showSumMarks(){
-  const data=getTableData(); const selected=document.getElementById("viewPerson").value; const sums={};
-  persons.forEach(p=>{ if(selected!=="all" && selected!==p) return; sums[p]={cie:0,se:0,total:0}; data.forEach(r=>{ sums[p].cie+=r[p+"_cie"]; sums[p].se+=r[p+"_se"]; sums[p].total+=r[p+"_cie"]+r[p+"_se"]; }); });
-  let html=""; for(const p in sums){ html+=`${document.getElementById(p+"Name").value}: CIE=${sums[p].cie}, SE=${sums[p].se}, Total=${sums[p].total}<br>`; }
-  document.getElementById("sumMarks").innerHTML=html;
+  const data=getTableData();
+  const selected=document.getElementById("viewPerson").value;
+  const sums={};
+  persons.forEach(p=>{
+    // Only calculate sum for persons that are visible AND selected for view
+    const personCheckbox = document.getElementById(p+"Hide");
+    const visibleByCheckbox = personCheckbox ? personCheckbox.checked : true;
+    const isSelectedForView = (selected === "all" || selected === p);
+
+    if(visibleByCheckbox && isSelectedForView) {
+        sums[p]={cie:0,se:0,total:0};
+        data.forEach(r=>{ sums[p].cie += (r[p+"_cie"]||0); sums[p].se += (r[p+"_se"]||0); sums[p].total += (r[p+"_cie"]||0) + (r[p+"_se"]||0); });
+    }
+  });
+  let html="";
+  for(const p in sums){
+    const name = document.getElementById(p+"Name")?document.getElementById(p+"Name").value:p;
+    html += `<b>${name} : </b> CIE=${sums[p].cie}, SE=${sums[p].se}, Total=${sums[p].total}<br>`;
+  }
+  document.getElementById("sumMarks").innerHTML = html || "--- No marks visible/selected ---";
 }
 
-// Initialize on load
-window.onload = function() {
-  refreshPersonView(); // sets up view options and table visibility
-  drawCharts();        // draw initial charts
-  showHighestMarks();  // show initial highest scorer
-  showSumMarks();      // show initial sums
+/* --------------------
+   Mode toggle
+   -------------------- */
+function toggleMode(){
+  document.body.classList.toggle("dark");
+  document.body.classList.toggle("light");
+  // Redraw charts to update colors/styles dynamically if needed (Chart.js handles color updates better on redraw)
+  drawCharts();
+}
+
+/* --------------------
+   Initialize UI: attach autosave to starting rows, refresh views
+   -------------------- */
+window.onload = function(){
+  // Attach autosave to any existing table rows (initial HTML)
+  document.querySelectorAll("#dataTable tr").forEach(r=> attachAutoSave(r) );
+  // If DB not yet ready, loadData will call drawCharts on success
+  // Set initial mode
+  if (!document.body.classList.contains("dark") && !document.body.classList.contains("light")) {
+    document.body.classList.add("light");
+  }
+
+  drawCharts(); // draw initial empty charts
+  setupHideControls();
+  refreshPersonView();
+  showHighestMarks();
+  showSumMarks();
 };
 </script>
 </body>

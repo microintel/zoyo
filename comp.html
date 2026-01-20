@@ -349,6 +349,7 @@ padding: 8px 12px;
   <textarea id="pasteData" placeholder="Paste JSON data here..."
     style="width:90%; max-width:500px; height:80px;"></textarea><br>
   <button onclick="importFromPaste()">📥 Import From Paste</button>
+  <button onclick="fetchExJSON()"> Example Data </button>
 </div>
 
 <h3>CIE Graph</h3>
@@ -383,6 +384,16 @@ request.onerror = e => console.error("DB error", e);
 /* --------------------
    Utilities: Table data
    -------------------- */
+   
+   
+  async function fetchExJSON() {
+  let x = await fetch("https://microintel.github.io/zoyo/comp/compExampleData.txt")
+  let data = await x.text();
+  
+  document.getElementById("pasteData").innerHTML=data;
+  importFromPaste();
+  }
+   
 function getTableData(){
   const rows=document.querySelectorAll("#dataTable tr");
   return Array.from(rows).map(row=>{

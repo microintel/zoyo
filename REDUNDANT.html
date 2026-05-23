@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REDUNDANT — Academic Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-deep: #000;
+    --bg-card: #000;
+    --bg-raised: #1a1714;
+    --bg-hover: #221f1b;
+    --amber: #c8922a;
+    --amber-light: #e8b04a;
+    --amber-dim: #7a5618;
+    --amber-glow: rgba(200,146,42,0.12);
+    --text-primary: #e8dcc8;
+    --text-secondary: #8a7a62;
+    --text-dim: #4a4035;
+    --red: #c84a3a;
+    --green: #4a8a5a;
+    --border: rgba(200,146,42,0.15);
+    --border-strong: rgba(200,146,42,0.35);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'EB Garamond', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --radius: 3px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.6);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 3px; }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .masthead {
+    border-bottom: 1px solid var(--border-strong);
+    padding: 0 2rem;
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .masthead-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 0;
+  }
+
+  .logo-mark {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--amber);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .logo-mark:hover { color: var(--amber-light); }
+
+  .logo-sub {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 2px;
+  }
+
+  .nav-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .nav-tab {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    padding: 0 1.25rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nav-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+  .nav-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius);
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+  }
+
+  .btn-ghost {
+    border-color: var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .btn-ghost:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-glow); }
+
+  .btn-amber {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: var(--amber-glow);
+  }
+  .btn-amber:hover { background: rgba(200,146,42,0.25); color: var(--amber-light); }
+
+  .btn-solid {
+    border-color: var(--amber);
+    background: var(--amber);
+    color: var(--bg-deep);
+    font-weight: 600;
+  }
+  .btn-solid:hover { background: var(--amber-light); }
+
+  .btn-danger {
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .btn-danger:hover { background: rgba(200,74,58,0.15); }
+
+  .btn-sm { font-size: 0.58rem; padding: 0.3rem 0.65rem; }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+  /* ── SECTIONS ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .dash-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+
+  .dash-title {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .dash-title span { color: var(--amber); font-style: italic; }
+
+  .dash-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 0.5rem;
+  }
+
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .stage-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .stage-card:hover { border-color: var(--border-strong); background: var(--bg-raised); }
+  .stage-card:hover::before { transform: scaleX(1); }
+
+  .stage-card-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+
+  .stage-card-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .stage-card-pct {
+    font-family: var(--font-mono);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stage-card-meta {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--bg-hover);
+    border-radius: 2px;
+    margin-top: 1rem;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-cell {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--amber-light);
+  }
+
+  .stat-sub {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 0.15rem;
+  }
+
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .chart-title {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 1rem;
+  }
+
+  /* ── STAGE SECTIONS ── */
+  .stage-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stage-title {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .stage-title em { color: var(--amber); font-style: italic; }
+
+  .semester-block {
+    margin-bottom: 2rem;
+  }
+
+  .semester-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .semester-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-primary);
+  }
+
+  .semester-avg {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--amber);
+  }
+
+  /* ── TABLE ── */
+  .subject-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .subject-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-deep);
+    font-weight: 400;
+  }
+
+  .subject-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(200,146,42,0.06);
+    vertical-align: middle;
+    color: var(--text-primary);
+  }
+
+  .subject-table tr:hover td { background: var(--bg-hover); }
+
+  .subject-table tr:last-child td { border-bottom: none; }
+
+  .marks-badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--amber-light);
+  }
+
+  .pct-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  .pct-high { background: rgba(74,138,90,0.2); color: #7acc8a; }
+  .pct-mid  { background: rgba(200,146,42,0.2); color: var(--amber-light); }
+  .pct-low  { background: rgba(200,74,58,0.2); color: #e07060; }
+
+  .action-cell { display: flex; gap: 0.35rem; }
+
+  /* ── SSLC TABLE ── */
+  .sslc-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    transform: translateY(12px);
+    transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .form-field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+  }
+
+  .form-input {
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-input:focus { outline: none; border-color: var(--amber); }
+  .form-input::placeholder { color: var(--text-dim); }
+
+  select.form-input { cursor: pointer; }
+  option { background: var(--bg-raised); }
+
+  .components-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .components-title {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .component-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 32px;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+    align-items: center;
+  }
+
+  .remove-comp {
+    background: none;
+    border: 1px solid rgba(200,74,58,0.4);
+    color: var(--red);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.7rem;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .remove-comp:hover { background: rgba(200,74,58,0.15); }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── CONFIRM DIALOG ── */
+  .confirm-box {
+    max-width: 380px;
+    text-align: center;
+  }
+
+  .confirm-msg {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  /* ── TOAST ── */
+  .toast-stack {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toast {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--amber);
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(1rem); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+  }
+
+  .empty-state-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  .empty-state-text {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state-sub {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  /* ── DIVIDER RULE ── */
+  .rule {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* ── INLINE EDIT ── */
+  .inline-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--amber);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 0.15rem 0.25rem;
+    width: 60px;
+    outline: none;
+  }
+
+  /* ── SEMESTER COLLAPSE ── */
+  .semester-body { display: block; }
+  .semester-body.collapsed { display: none; }
+
+  .collapse-icon { transition: transform 0.2s; }
+  .semester-header.collapsed .collapse-icon { transform: rotate(-90deg); }
+
+  /* ── EXAM TYPE BADGE ── */
+  .exam-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .exam-regular { border-color: var(--amber-dim); color: var(--amber); }
+  .exam-arrear  { border-color: rgba(200,74,58,0.4); color: #e07060; }
+  .exam-lab     { border-color: rgba(74,138,90,0.4); color: #7acc8a; }
+
+  /* ── IMPORT HIDDEN ── */
+  #importFile { display: none; }
+
+  /* ── CHART CONTAINER ── */
+  .chart-wrap { position: relative; height: 200px; }
+
+  /* ── DECORATION LINES ── */
+  .deco-line {
+    width: 40px;
+    height: 2px;
+    background: var(--amber);
+    margin: 0.5rem 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .stage-grid { grid-template-columns: 1fr; }
+    .dash-stats { grid-template-columns: repeat(2,1fr); }
+    .chart-row { grid-template-columns: 1fr; }
+    .masthead { flex-wrap: wrap; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section.active { animation: fadeUp 0.3s ease; }
+
+  .counter { display: inline-block; }
+
+  /* ── SEMESTER CHART MINI ── */
+  .sem-chart-mini { position: relative; height: 100px; }
+
+  /* ── ADD SEM BUTTON ── */
+  .add-sem-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ MASTHEAD ══ -->
+  <header class="masthead">
+    <div class="masthead-left">
+      <div>
+        <div class="logo-mark" onclick="showSection('dashboard')">REDUNDANT</div>
+        <div class="logo-sub">Academic Vault · Est. ∞</div>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-section="dashboard" onclick="showSection('dashboard')">
+        ◈ Overview
+      </button>
+      <button class="nav-tab" data-section="sslc" onclick="showSection('sslc')">
+        SSLC
+      </button>
+      <button class="nav-tab" data-section="diploma" onclick="showSection('diploma')">
+        Diploma
+      </button>
+      <button class="nav-tab" data-section="engineering" onclick="showSection('engineering')">
+        Engineering
+      </button>
+      <button class="nav-tab" data-section="charts" onclick="showSection('charts')">
+        ▸ Charts
+      </button>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()">⤓ Export</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">⤒ Import</button>
+      <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
+      <button class="btn btn-amber btn-sm" onclick="exportHTMLReport()">⎙ Report</button>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- ── DASHBOARD ── -->
+    <section class="section active" id="section-dashboard">
+      <div class="dash-header">
+        <div class="dash-title">Your Academic <span>Record.</span></div>
+        <div class="deco-line"></div>
+        <div class="dash-subtitle">All stages · All marks · Nothing lost</div>
+      </div>
+
+      <div class="stage-grid" id="dash-stage-cards">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="dash-stats" id="dash-stats">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">Overall Progress — Across Stages</div>
+          <div class="chart-wrap"><canvas id="chartOverall"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Best vs Weakest — All Subjects</div>
+          <div class="chart-wrap"><canvas id="chartBestWorst"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SSLC ── -->
+    <section class="section" id="section-sslc">
+      <div class="stage-header">
+        <div>
+          <div class="stage-title">SSLC — <em>10th Standard</em></div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-secondary);margin-top:0.25rem;" id="sslc-summary"></div>
+        </div>
+        <button class="btn btn-solid" onclick="openAddSubjectModal('sslc',null)">+ Add Subject</button>
+      </div>
+
+      <div class="sslc-table-wrap">
+        <table class="subject-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Scored</th>
+              <th>Max</th>
+              <th>%</th>
+              <th>Grade</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="sslc-tbody"></tbody>
+        </table>
+      </div>
+
+      <div id="sslc-empty" class="empty-state" style="display:none;margin-top:1rem;">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-text">No subjects recorded yet.</div>
+        <div class="empty-state-sub">Add your SSLC marks to begin</div>
+      </div>
+
+      <div style="margin-top:1.5rem;" id="sslc-chart-wrap">
+        <div class="chart-card">
+          <div class="chart-title">Subject-wise Performance</div>
+          <div class="chart-wrap"><canvas id="chartSSLC"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DIPLOMA ── -->
+    <section class="section" id="section-diploma">
+      <div class="stage-header">
+        <div>
+          <div class="stage-title">Diploma — <em>Polytechnic</em></div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-secondary);margin-top:0.25rem;" id="diploma-summary"></div>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-ghost" onclick="addSemester('diploma')">+ Add Semester</button>
+          <button class="btn btn-solid" onclick="openAddSubjectModal('diploma',null)">+ Add Subject</button>
+        </div>
+      </div>
+      <div id="diploma-semesters"></div>
+    </section>
+
+    <!-- ── ENGINEERING ── -->
+    <section class="section" id="section-engineering">
+      <div class="stage-header">
+        <div>
+          <div class="stage-title">Engineering — <em>B.E / B.Tech</em></div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-secondary);margin-top:0.25rem;" id="engineering-summary"></div>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-ghost" onclick="addSemester('engineering')">+ Add Semester</button>
+          <button class="btn btn-solid" onclick="openAddSubjectModal('engineering',null)">+ Add Subject</button>
+        </div>
+      </div>
+      <div id="engineering-semesters"></div>
+    </section>
+
+    <!-- ── CHARTS ── -->
+    <section class="section" id="section-charts">
+      <div class="dash-header">
+        <div class="dash-title">Analytics & <span>Trends</span></div>
+        <div class="dash-subtitle">Visual breakdown of your academic journey</div>
+      </div>
+
+      <div class="chart-row" style="grid-template-columns:1fr;">
+        <div class="chart-card">
+          <div class="chart-title">Semester-wise Average % — Diploma</div>
+          <div class="chart-wrap" style="height:220px;"><canvas id="chartDipSem"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row" style="grid-template-columns:1fr;">
+        <div class="chart-card">
+          <div class="chart-title">Semester-wise Average % — Engineering</div>
+          <div class="chart-wrap" style="height:220px;"><canvas id="chartEngSem"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">SSLC Subject Radar</div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartSSLCRadar"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Stage Comparison</div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartStageComp"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══ MODAL OVERLAY ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-title" id="modalTitle">Add Subject</div>
+    <div id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- ══ TOAST STACK ══ -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+let DB;
+const DB_NAME = 'redundant_vault';
+const DB_VER  = 1;
+
+let state = {
+  sslc: [],          // [{id, name, scored, max}]
+  diploma: [],       // [{id, sem, name, components:[{name,scored,max}], external:{scored,max}}]
+  engineering: [],   // [{id, sem, name, examType, components:[...], external:{scored,max}}]
+  semesters: {
+    diploma: [],     // [{id, label}] — ordered list of sems
+    engineering: []
+  }
+};
+
+// ══════════════════════════════════════════════════
+//  INDEXEDDB
+// ══════════════════════════════════════════════════
+function initDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      ['sslc','diploma','engineering','meta'].forEach(s => {
+        if (!db.objectStoreNames.contains(s)) db.createObjectStore(s, {keyPath:'id'});
+      });
+    };
+    req.onsuccess = e => { DB = e.target.result; res(); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((res, rej) => {
+    const tx = DB.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbPut(store, obj) {
+  return new Promise((res, rej) => {
+    const tx = DB.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(obj);
+    req.onsuccess = () => res();
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbDelete(store, id) {
+  return new Promise((res, rej) => {
+    const tx = DB.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(id);
+    req.onsuccess = () => res();
+    req.onerror = () => rej(req.error);
+  });
+}
+
+async function loadAll() {
+  state.sslc        = await dbGetAll('sslc');
+  state.diploma     = await dbGetAll('diploma');
+  state.engineering = await dbGetAll('engineering');
+  const meta = await dbGetAll('meta');
+  const semMeta = meta.find(m => m.id === 'semesters');
+  if (semMeta) {
+    state.semesters = semMeta.data;
+  } else {
+    // defaults
+    state.semesters = {
+      diploma: [{id:'d1',label:'Semester 1'},{id:'d2',label:'Semester 2'},{id:'d3',label:'Semester 3'},{id:'d4',label:'Semester 4'},{id:'d5',label:'Semester 5'},{id:'d6',label:'Semester 6'}],
+      engineering: [{id:'e1',label:'Semester 1'},{id:'e2',label:'Semester 2'},{id:'e3',label:'Semester 3'},{id:'e4',label:'Semester 4'},{id:'e5',label:'Semester 5'},{id:'e6',label:'Semester 6'},{id:'e7',label:'Semester 7'},{id:'e8',label:'Semester 8'}]
+    };
+    await saveSemesters();
+  }
+}
+
+async function saveSemesters() {
+  await dbPut('meta', {id:'semesters', data: state.semesters});
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.querySelector(`[data-section="${name}"]`).classList.add('active');
+  refreshSection(name);
+}
+
+function refreshSection(name) {
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'sslc')      renderSSLC();
+  if (name === 'diploma')   renderStage('diploma');
+  if (name === 'engineering') renderStage('engineering');
+  if (name === 'charts')    renderCharts();
+}
+
+// ══════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════
+function pct(scored, max) {
+  if (!max) return 0;
+  return Math.round((scored/max)*100*10)/10;
+}
+
+function grade(p) {
+  if (p >= 90) return 'O';
+  if (p >= 80) return 'A+';
+  if (p >= 70) return 'A';
+  if (p >= 60) return 'B+';
+  if (p >= 50) return 'B';
+  if (p >= 40) return 'C';
+  return 'F';
+}
+
+function pctClass(p) {
+  if (p >= 70) return 'pct-high';
+  if (p >= 50) return 'pct-mid';
+  return 'pct-low';
+}
+
+function calcSubjectTotal(subj) {
+  const intTotal = (subj.components||[]).reduce((a,c)=>a+(+c.scored||0),0);
+  const intMax   = (subj.components||[]).reduce((a,c)=>a+(+c.max||0),0);
+  const extS = +(subj.external?.scored||0);
+  const extM = +(subj.external?.max||0);
+  return { scored: intTotal+extS, max: intMax+extM, intScored:intTotal, intMax, extS, extM };
+}
+
+function stageAvg(subjects) {
+  if (!subjects.length) return 0;
+  let ts=0, tm=0;
+  subjects.forEach(s => { const t=calcSubjectTotal(s); ts+=t.scored; tm+=t.max; });
+  return tm ? pct(ts,tm) : 0;
+}
+
+function semSubjects(stage, semId) {
+  return state[stage].filter(s => s.sem === semId);
+}
+
+function semAvg(stage, semId) {
+  return stageAvg(semSubjects(stage, semId));
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER DASHBOARD
+// ══════════════════════════════════════════════════
+function renderDashboard() {
+  // Stage cards
+  const stageData = [
+    { key:'sslc', label:'Stage I', name:'SSLC', subjects: state.sslc, section:'sslc' },
+    { key:'diploma', label:'Stage II', name:'Diploma', subjects: state.diploma, section:'diploma' },
+    { key:'engineering', label:'Stage III', name:'Engineering', subjects: state.engineering, section:'engineering' },
+  ];
+
+  const cardsEl = document.getElementById('dash-stage-cards');
+  cardsEl.innerHTML = stageData.map(s => {
+    const avg = s.key === 'sslc'
+      ? (s.subjects.length ? pct(s.subjects.reduce((a,b)=>a+(+b.scored||0),0), s.subjects.reduce((a,b)=>a+(+b.max||0),0)) : 0)
+      : stageAvg(s.subjects);
+    return `
+    <div class="stage-card" onclick="showSection('${s.section}')">
+      <div class="stage-card-label">${s.label}</div>
+      <div class="stage-card-name">${s.name}</div>
+      <div class="stage-card-pct"><span class="counter" data-target="${avg}">0</span>%</div>
+      <div class="stage-card-meta">${s.subjects.length} subject${s.subjects.length!==1?'s':''}</div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:${avg}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // Counters animate
+  animateCounters();
+
+  // Stats
+  const allSubjects = [
+    ...state.sslc.map(s=>({name:s.name, pct: pct(+s.scored||0,+s.max||0)})),
+    ...state.diploma.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+    ...state.engineering.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+  ];
+
+  const best   = allSubjects.sort((a,b)=>b.pct-a.pct)[0];
+  const worst  = [...allSubjects].sort((a,b)=>a.pct-b.pct)[0];
+  const total  = state.sslc.length + state.diploma.length + state.engineering.length;
+  const overallPct = allSubjects.length ? (allSubjects.reduce((a,b)=>a+b.pct,0)/allSubjects.length).toFixed(1) : 0;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-cell">
+      <div class="stat-label">Total Subjects</div>
+      <div class="stat-value">${total}</div>
+      <div class="stat-sub">across all stages</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Overall Average</div>
+      <div class="stat-value">${overallPct}%</div>
+      <div class="stat-sub">${grade(overallPct)} grade</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Best Subject</div>
+      <div class="stat-value" style="font-size:0.9rem;">${best?.name||'—'}</div>
+      <div class="stat-sub">${best?.pct||0}%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Needs Attention</div>
+      <div class="stat-value" style="font-size:0.9rem;color:var(--red);">${worst?.name||'—'}</div>
+      <div class="stat-sub">${worst?.pct||0}%</div>
+    </div>
+  `;
+
+  // Charts
+  renderDashCharts(stageData);
+}
+
+function animateCounters() {
+  document.querySelectorAll('.counter[data-target]').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    let cur = 0;
+    const step = target/40;
+    const timer = setInterval(()=>{
+      cur = Math.min(cur+step, target);
+      el.textContent = cur.toFixed(1);
+      if (cur >= target) clearInterval(timer);
+    }, 20);
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER SSLC
+// ══════════════════════════════════════════════════
+function renderSSLC() {
+  const subjs = state.sslc;
+  const tbody = document.getElementById('sslc-tbody');
+  const emptyEl = document.getElementById('sslc-empty');
+  const chartWrap = document.getElementById('sslc-chart-wrap');
+
+  if (!subjs.length) {
+    tbody.innerHTML = '';
+    emptyEl.style.display = 'block';
+    chartWrap.style.display = 'none';
+    document.getElementById('sslc-summary').textContent = '';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  chartWrap.style.display = 'block';
+
+  const totalS = subjs.reduce((a,b)=>a+(+b.scored||0),0);
+  const totalM = subjs.reduce((a,b)=>a+(+b.max||0),0);
+  const avg = pct(totalS,totalM);
+  document.getElementById('sslc-summary').textContent = `${subjs.length} subjects · ${totalS}/${totalM} · ${avg}% · ${grade(avg)}`;
+
+  tbody.innerHTML = subjs.map(s => {
+    const p = pct(+s.scored||0, +s.max||0);
+    return `<tr>
+      <td style="font-family:var(--font-body);font-size:0.85rem;">${escHtml(s.name)}</td>
+      <td class="marks-badge">${s.scored}</td>
+      <td style="color:var(--text-secondary);">${s.max}</td>
+      <td><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
+      <td style="color:var(--amber-light);font-weight:600;">${grade(p)}</td>
+      <td>
+        <div class="action-cell">
+          <button class="btn btn-ghost btn-sm" onclick="openEditSubjectModal('sslc',null,'${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('sslc',null,'${s.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Chart
+  renderSSLCChart();
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER STAGE (diploma/engineering)
+// ══════════════════════════════════════════════════
+function renderStage(stage) {
+  const sems = state.semesters[stage];
+  const container = document.getElementById(`${stage}-semesters`);
+
+  if (!sems.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📚</div><div class="empty-state-text">No semesters yet.</div><div class="empty-state-sub">Click "Add Semester" to begin</div></div>`;
+    document.getElementById(`${stage}-summary`).textContent = '';
+    return;
+  }
+
+  const allSubjs = state[stage];
+  const totalS = allSubjs.reduce((a,s)=>{ const t=calcSubjectTotal(s); return a+t.scored; },0);
+  const totalM = allSubjs.reduce((a,s)=>{ const t=calcSubjectTotal(s); return a+t.max; },0);
+  const avg = pct(totalS,totalM);
+  document.getElementById(`${stage}-summary`).textContent = `${allSubjs.length} subjects · ${sems.length} semesters · ${avg}% overall`;
+
+  container.innerHTML = sems.map(sem => {
+    const subjs = semSubjects(stage, sem.id);
+    const avg = semAvg(stage, sem.id);
+    return `
+    <div class="semester-block" id="sem-block-${sem.id}">
+      <div class="semester-header" id="sem-hdr-${sem.id}" onclick="toggleSem('${sem.id}')">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span class="collapse-icon">▾</span>
+          <span class="semester-label">${escHtml(sem.label)}</span>
+          <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);">${subjs.length} subjects</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span class="semester-avg">${avg}%</span>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openAddSubjectModal('${stage}','${sem.id}')">+ Subject</button>
+          <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDeleteSem('${stage}','${sem.id}')">✕</button>
+        </div>
+      </div>
+      <div class="semester-body" id="sem-body-${sem.id}">
+        ${renderSemBody(stage, sem, subjs)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSemBody(stage, sem, subjs) {
+  if (!subjs.length) {
+    return `<div class="empty-state" style="margin-bottom:1rem;">
+      <div class="empty-state-text" style="font-size:0.9rem;">No subjects in this semester</div>
+    </div>`;
+  }
+
+  const isEng = stage === 'engineering';
+
+  const rows = subjs.map(s => {
+    const t = calcSubjectTotal(s);
+    const p = pct(t.scored, t.max);
+    const compSummary = (s.components||[]).map(c=>`${c.name}:${c.scored}/${c.max}`).join(' · ');
+    return `<tr>
+      <td style="font-family:var(--font-body);font-size:0.85rem;">
+        ${escHtml(s.name)}
+        ${isEng ? `<span class="exam-badge exam-${s.examType||'regular'}" style="margin-left:0.4rem;">${s.examType||'regular'}</span>` : ''}
+      </td>
+      <td style="font-size:0.62rem;color:var(--text-secondary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${compSummary}">${compSummary||'—'}</td>
+      <td class="marks-badge">${s.external?.scored||0}/${s.external?.max||0}</td>
+      <td class="marks-badge">${t.scored}/${t.max}</td>
+      <td><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
+      <td style="color:var(--amber-light);font-weight:600;">${grade(p)}</td>
+      <td>
+        <div class="action-cell">
+          <button class="btn btn-ghost btn-sm" onclick="openEditSubjectModal('${stage}','${sem.id}','${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${stage}','${sem.id}','${s.id}')">Del</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:0.5rem;">
+    <table class="subject-table">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Internals</th>
+          <th>External</th>
+          <th>Total</th>
+          <th>%</th>
+          <th>Grade</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function toggleSem(semId) {
+  const hdr  = document.getElementById('sem-hdr-' + semId);
+  const body = document.getElementById('sem-body-' + semId);
+  hdr.classList.toggle('collapsed');
+  body.classList.toggle('collapsed');
+}
+
+// ══════════════════════════════════════════════════
+//  ADD / EDIT MODALS
+// ══════════════════════════════════════════════════
+let modalCtx = {};
+
+function openAddSubjectModal(stage, semId) {
+  modalCtx = { mode:'add', stage, semId };
+  const title = stage === 'sslc' ? 'Add SSLC Subject' : `Add Subject — ${stage.charAt(0).toUpperCase()+stage.slice(1)}`;
+  openModal(title, buildSubjectForm(stage, semId, null));
+  setModalFooter([
+    { label:'Cancel', cls:'btn-ghost', fn:'closeModal()' },
+    { label:'Add Subject', cls:'btn-solid', fn:'saveSubject()' }
+  ]);
+}
+
+function openEditSubjectModal(stage, semId, id) {
+  const subj = state[stage].find(s=>s.id===id);
+  if (!subj) return;
+  modalCtx = { mode:'edit', stage, semId, id };
+  openModal('Edit Subject', buildSubjectForm(stage, semId, subj));
+  setModalFooter([
+    { label:'Cancel', cls:'btn-ghost', fn:'closeModal()' },
+    { label:'Save Changes', cls:'btn-solid', fn:'saveSubject()' }
+  ]);
+}
+
+function buildSubjectForm(stage, semId, subj) {
+  const sems = state.semesters[stage] || [];
+
+  let semSelect = '';
+  if (stage !== 'sslc') {
+    const opts = sems.map(s => `<option value="${s.id}" ${subj?.sem===s.id||semId===s.id?'selected':''}>${s.label}</option>`).join('');
+    semSelect = `
+    <div class="form-row single">
+      <div class="form-field">
+        <label class="form-label">Semester</label>
+        <select class="form-input" id="f-sem">${opts}</select>
+      </div>
+    </div>`;
+  }
+
+  let examTypeField = '';
+  if (stage === 'engineering') {
+    const types = ['regular','arrear','lab'];
+    examTypeField = `
+    <div class="form-row single" style="margin-bottom:0.75rem;">
+      <div class="form-field">
+        <label class="form-label">Exam Type</label>
+        <select class="form-input" id="f-examtype">
+          ${types.map(t=>`<option value="${t}" ${subj?.examType===t?'selected':''}>${t.charAt(0).toUpperCase()+t.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+    </div>`;
+  }
+
+  if (stage === 'sslc') {
+    return `
+    <div class="form-row single">
+      <div class="form-field">
+        <label class="form-label">Subject Name</label>
+        <input class="form-input" id="f-name" placeholder="e.g. Mathematics" value="${escHtml(subj?.name||'')}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Marks Scored</label>
+        <input class="form-input" type="number" id="f-scored" placeholder="0" value="${subj?.scored||''}">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Max Marks</label>
+        <input class="form-input" type="number" id="f-max" placeholder="100" value="${subj?.max||100}">
+      </div>
+    </div>`;
+  }
+
+  // Diploma / Engineering
+  const comps = subj?.components || [];
+  const extS = subj?.external?.scored ?? '';
+  const extM = subj?.external?.max ?? 60;
+
+  const compRows = comps.map((c,i) => buildCompRow(i, c.name, c.scored, c.max)).join('');
+
+  return `
+  ${semSelect}
+  <div class="form-row single">
+    <div class="form-field">
+      <label class="form-label">Subject Name</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Engineering Mathematics" value="${escHtml(subj?.name||'')}">
+    </div>
+  </div>
+  ${examTypeField}
+  <div class="components-section">
+    <div class="components-title">
+      <span>Internal Components</span>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="addCompRow()">+ Add Component</button>
+    </div>
+    <div id="comp-list">${compRows}</div>
+  </div>
+  <div class="components-section">
+    <div class="components-title"><span>External / End-Sem Exam</span></div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Scored</label>
+        <input class="form-input" type="number" id="f-ext-scored" placeholder="0" value="${extS}">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Max Marks</label>
+        <input class="form-input" type="number" id="f-ext-max" placeholder="60" value="${extM}">
+      </div>
+    </div>
+  </div>`;
+}
+
+let compIdx = 0;
+function buildCompRow(i, name='', scored='', max='') {
+  compIdx = Math.max(compIdx, i+1);
+  return `<div class="component-row" id="comp-row-${i}">
+    <input class="form-input" placeholder="Component name (e.g. IA1)" value="${escHtml(name)}" data-comp-name="${i}">
+    <input class="form-input" type="number" placeholder="0/${max||20}" value="${scored}" data-comp-scored="${i}" style="text-align:center;">
+    <input class="form-input" type="number" placeholder="Max" value="${max}" data-comp-max="${i}" style="text-align:center;">
+    <button class="remove-comp" onclick="removeCompRow(${i})">✕</button>
+  </div>`;
+}
+
+function addCompRow() {
+  const list = document.getElementById('comp-list');
+  const div = document.createElement('div');
+  div.innerHTML = buildCompRow(compIdx++);
+  list.appendChild(div.firstElementChild);
+}
+
+function removeCompRow(i) {
+  const el = document.getElementById('comp-row-' + i);
+  if (el) el.remove();
+}
+
+async function saveSubject() {
+  const { mode, stage, semId, id } = modalCtx;
+
+  const name = document.getElementById('f-name')?.value?.trim();
+  if (!name) { toast('Subject name is required'); return; }
+
+  if (stage === 'sslc') {
+    const scored = +document.getElementById('f-scored').value || 0;
+    const max    = +document.getElementById('f-max').value || 100;
+    const subj = { id: mode==='edit'?id:uid(), name, scored, max };
+    if (mode === 'edit') {
+      const idx = state.sslc.findIndex(s=>s.id===id);
+      state.sslc[idx] = subj;
+    } else {
+      state.sslc.push(subj);
+    }
+    await dbPut('sslc', subj);
+    toast(mode==='edit'?'Subject updated':'Subject added');
+    closeModal();
+    renderSSLC();
+    return;
+  }
+
+  const fSem = document.getElementById('f-sem')?.value || semId;
+  const examType = document.getElementById('f-examtype')?.value || 'regular';
+
+  // Gather components
+  const compList = document.getElementById('comp-list');
+  const components = [];
+  compList.querySelectorAll('.component-row').forEach(row => {
+    const nameInp   = row.querySelector('[data-comp-name]');
+    const scoredInp = row.querySelector('[data-comp-scored]');
+    const maxInp    = row.querySelector('[data-comp-max]');
+    if (nameInp && nameInp.value.trim()) {
+      components.push({ name: nameInp.value.trim(), scored: +scoredInp.value||0, max: +maxInp.value||0 });
+    }
+  });
+
+  const external = {
+    scored: +document.getElementById('f-ext-scored').value || 0,
+    max:    +document.getElementById('f-ext-max').value || 60,
+  };
+
+  const subj = { id: mode==='edit'?id:uid(), sem: fSem, name, examType, components, external };
+  if (mode === 'edit') {
+    const idx = state[stage].findIndex(s=>s.id===id);
+    state[stage][idx] = subj;
+  } else {
+    state[stage].push(subj);
+  }
+  await dbPut(stage, subj);
+  toast(mode==='edit'?'Subject updated':'Subject added');
+  closeModal();
+  renderStage(stage);
+}
+
+// ══════════════════════════════════════════════════
+//  SEMESTER MANAGEMENT
+// ══════════════════════════════════════════════════
+async function addSemester(stage) {
+  const sems = state.semesters[stage];
+  const num = sems.length + 1;
+  const prefix = stage === 'diploma' ? 'd' : 'e';
+  sems.push({ id: prefix + uid(), label: `Semester ${num}` });
+  await saveSemesters();
+  renderStage(stage);
+  toast(`Semester ${num} added`);
+}
+
+function confirmDeleteSem(stage, semId) {
+  const sem = state.semesters[stage].find(s=>s.id===semId);
+  const subCount = semSubjects(stage, semId).length;
+  openModal('Delete Semester', `
+    <div class="confirm-box">
+      <div class="modal-title" style="text-align:center;border:none;margin-bottom:0.5rem;">Are you sure?</div>
+      <p class="confirm-msg">"${escHtml(sem?.label)}" with ${subCount} subject${subCount!==1?'s':''} will be permanently removed.</p>
+    </div>
+  `);
+  setModalFooter([
+    { label:'Cancel', cls:'btn-ghost', fn:'closeModal()' },
+    { label:'Delete Semester', cls:'btn-danger', fn:`deleteSemester('${stage}','${semId}')` },
+  ]);
+}
+
+async function deleteSemester(stage, semId) {
+  // Remove all subjects in semester
+  const toDelete = state[stage].filter(s=>s.sem===semId);
+  for (const s of toDelete) await dbDelete(stage, s.id);
+  state[stage] = state[stage].filter(s=>s.sem!==semId);
+  // Remove semester
+  state.semesters[stage] = state.semesters[stage].filter(s=>s.id!==semId);
+  await saveSemesters();
+  closeModal();
+  renderStage(stage);
+  toast('Semester deleted');
+}
+
+// ══════════════════════════════════════════════════
+//  DELETE SUBJECT
+// ══════════════════════════════════════════════════
+function confirmDelete(stage, semId, id) {
+  const subj = state[stage].find(s=>s.id===id);
+  openModal('Delete Subject', `
+    <div class="confirm-box">
+      <div class="modal-title" style="text-align:center;border:none;margin-bottom:0.5rem;">Are you sure?</div>
+      <p class="confirm-msg">"${escHtml(subj?.name)}" will be permanently deleted from your vault.</p>
+    </div>
+  `);
+  setModalFooter([
+    { label:'Cancel', cls:'btn-ghost', fn:'closeModal()' },
+    { label:'Delete', cls:'btn-danger', fn:`deleteSubject('${stage}','${semId}','${id}')` },
+  ]);
+}
+
+async function deleteSubject(stage, semId, id) {
+  state[stage] = state[stage].filter(s=>s.id!==id);
+  await dbDelete(stage, id);
+  closeModal();
+  toast('Subject deleted');
+  if (stage === 'sslc') renderSSLC();
+  else renderStage(stage);
+}
+
+// ══════════════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════════════
+function openModal(title, bodyHTML) {
+  compIdx = 0;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHTML;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function setModalFooter(buttons) {
+  document.getElementById('modalFooter').innerHTML = buttons.map(b =>
+    `<button class="btn ${b.cls}" onclick="${b.fn}">${b.label}</button>`
+  ).join('');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target.id === 'modalOverlay') closeModal();
+}
+
+// ══════════════════════════════════════════════════
+//  CHARTS
+// ══════════════════════════════════════════════════
+const chartInstances = {};
+
+function makeChart(canvasId, config) {
+  if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) return;
+  chartInstances[canvasId] = new Chart(ctx, config);
+}
+
+const chartDefaults = {
+  color: 'rgba(232,220,200,0.7)',
+  font: { family: "'IBM Plex Mono', monospace", size: 10 },
+};
+
+function renderDashCharts(stageData) {
+  // Overall line chart
+  const labels = ['SSLC', 'Diploma', 'Engineering'];
+  const avgs = [
+    pct(state.sslc.reduce((a,b)=>a+(+b.scored||0),0), state.sslc.reduce((a,b)=>a+(+b.max||0),0)),
+    stageAvg(state.diploma),
+    stageAvg(state.engineering),
+  ];
+
+  makeChart('chartOverall', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Average %',
+        data: avgs,
+        borderColor: '#c8922a',
+        backgroundColor: 'rgba(200,146,42,0.1)',
+        pointBackgroundColor: '#c8922a',
+        pointRadius: 5,
+        tension: 0.3,
+        fill: true,
+      }]
+    },
+    options: lineChartOpts('Stage', '%')
+  });
+
+  // Best vs worst bar
+  const allSubjs = [
+    ...state.sslc.map(s=>({name:s.name, pct:pct(+s.scored||0,+s.max||0)})),
+    ...state.diploma.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+    ...state.engineering.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+  ].sort((a,b)=>b.pct-a.pct);
+  const top5 = allSubjs.slice(0,5);
+  const bot5 = allSubjs.slice(-5).reverse();
+  const combined = [...top5, ...bot5];
+
+  makeChart('chartBestWorst', {
+    type: 'bar',
+    data: {
+      labels: combined.map(s => s.name.length>12?s.name.slice(0,12)+'…':s.name),
+      datasets: [{
+        data: combined.map(s=>s.pct),
+        backgroundColor: combined.map((s,i)=> i<5 ? 'rgba(74,138,90,0.6)' : 'rgba(200,74,58,0.6)'),
+        borderColor: combined.map((s,i)=> i<5 ? '#7acc8a' : '#e07060'),
+        borderWidth: 1,
+      }]
+    },
+    options: barChartOpts('%')
+  });
+}
+
+function renderSSLCChart() {
+  const subjs = state.sslc;
+  if (!subjs.length) return;
+  makeChart('chartSSLC', {
+    type: 'bar',
+    data: {
+      labels: subjs.map(s=>s.name.length>10?s.name.slice(0,10)+'…':s.name),
+      datasets: [{
+        label: 'Percentage',
+        data: subjs.map(s=>pct(+s.scored||0,+s.max||0)),
+        backgroundColor: 'rgba(200,146,42,0.5)',
+        borderColor: '#c8922a',
+        borderWidth: 1,
+      }]
+    },
+    options: barChartOpts('%')
+  });
+}
+
+function renderCharts() {
+  // Diploma semesters
+  const dipSems = state.semesters.diploma;
+  makeChart('chartDipSem', {
+    type: 'bar',
+    data: {
+      labels: dipSems.map(s=>s.label),
+      datasets: [{
+        label: 'Avg %',
+        data: dipSems.map(s=>semAvg('diploma',s.id)),
+        backgroundColor: 'rgba(200,146,42,0.5)',
+        borderColor: '#c8922a',
+        borderWidth: 1,
+      }]
+    },
+    options: barChartOpts('%')
+  });
+
+  // Engineering semesters
+  const engSems = state.semesters.engineering;
+  makeChart('chartEngSem', {
+    type: 'bar',
+    data: {
+      labels: engSems.map(s=>s.label),
+      datasets: [{
+        label: 'Avg %',
+        data: engSems.map(s=>semAvg('engineering',s.id)),
+        backgroundColor: 'rgba(74,138,90,0.4)',
+        borderColor: '#7acc8a',
+        borderWidth: 1,
+      }]
+    },
+    options: barChartOpts('%')
+  });
+
+  // SSLC Radar
+  const sslc = state.sslc;
+  if (sslc.length >= 3) {
+    makeChart('chartSSLCRadar', {
+      type: 'radar',
+      data: {
+        labels: sslc.map(s=>s.name.length>8?s.name.slice(0,8)+'…':s.name),
+        datasets: [{
+          label: 'SSLC',
+          data: sslc.map(s=>pct(+s.scored||0,+s.max||0)),
+          backgroundColor: 'rgba(200,146,42,0.15)',
+          borderColor: '#c8922a',
+          pointBackgroundColor: '#c8922a',
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display:false } },
+        scales: {
+          r: {
+            max: 100, min: 0,
+            grid: { color: 'rgba(200,146,42,0.1)' },
+            ticks: { color: 'rgba(232,220,200,0.5)', font:{family:"'IBM Plex Mono'",size:9}, backdropColor:'transparent', stepSize:25 },
+            pointLabels: { color: 'rgba(232,220,200,0.7)', font:{family:"'IBM Plex Mono'",size:9} },
+          }
+        }
+      }
+    });
+  }
+
+  // Stage comparison
+  const stageAvgs = [
+    pct(state.sslc.reduce((a,b)=>a+(+b.scored||0),0), state.sslc.reduce((a,b)=>a+(+b.max||0),0)),
+    stageAvg(state.diploma),
+    stageAvg(state.engineering),
+  ];
+  makeChart('chartStageComp', {
+    type: 'bar',
+    data: {
+      labels: ['SSLC','Diploma','Engineering'],
+      datasets: [{
+        label: 'Overall %',
+        data: stageAvgs,
+        backgroundColor: ['rgba(200,146,42,0.6)','rgba(74,138,90,0.6)','rgba(100,130,200,0.6)'],
+        borderColor: ['#c8922a','#7acc8a','#8090e0'],
+        borderWidth: 1,
+      }]
+    },
+    options: barChartOpts('%')
+  });
+}
+
+function lineChartOpts(xLabel, yLabel) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false} },
+    scales:{
+      x:{ grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} },
+      y:{ min:0,max:100, grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} }
+    }
+  };
+}
+
+function barChartOpts(yLabel) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false} },
+    scales:{
+      x:{ grid:{display:false}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} },
+      y:{ min:0,max:100, grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}, callback:v=>v+'%'} }
+    }
+  };
+}
+
+// ══════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════════════════════
+function exportJSON() {
+  const data = { sslc: state.sslc, diploma: state.diploma, engineering: state.engineering, semesters: state.semesters, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `redundant_backup_${Date.now()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup exported');
+}
+
+async function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  try {
+    const data = JSON.parse(text);
+    // Validate
+    if (!data.sslc || !data.diploma || !data.engineering) throw new Error('Invalid format');
+
+    openModal('Confirm Import', `
+      <div class="confirm-box">
+        <div class="modal-title" style="text-align:center;border:none;margin-bottom:0.5rem;">Import Backup?</div>
+        <p class="confirm-msg">This will <strong>replace all current data</strong> with the backup from<br>${escHtml(data.exportedAt || 'unknown date')}.</p>
+      </div>
+    `);
+    setModalFooter([
+      { label:'Cancel', cls:'btn-ghost', fn:'closeModal()' },
+      { label:'Import & Replace', cls:'btn-danger', fn:`doImport(${JSON.stringify(JSON.stringify(data))})` },
+    ]);
+  } catch(e) {
+    toast('Invalid backup file');
+  }
+  event.target.value = '';
+}
+
+async function doImport(jsonStr) {
+  const data = JSON.parse(jsonStr);
+  // Clear stores
+  for (const store of ['sslc','diploma','engineering','meta']) {
+    const tx = DB.transaction(store, 'readwrite');
+    tx.objectStore(store).clear();
+    await new Promise(r=>tx.oncomplete=r);
+  }
+  // Insert
+  for (const s of data.sslc) await dbPut('sslc', s);
+  for (const s of data.diploma) await dbPut('diploma', s);
+  for (const s of data.engineering) await dbPut('engineering', s);
+  state.sslc = data.sslc;
+  state.diploma = data.diploma;
+  state.engineering = data.engineering;
+  if (data.semesters) state.semesters = data.semesters;
+  await saveSemesters();
+  closeModal();
+  toast('Data imported successfully');
+  renderDashboard();
+}
+
+function exportHTMLReport() {
+  const now = new Date().toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
+  const sslcRows = state.sslc.map(s=>{
+    const p=pct(+s.scored||0,+s.max||0);
+    return `<tr><td>${escHtml(s.name)}</td><td>${s.scored}/${s.max}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
+  }).join('');
+
+  const renderStageReport = (stage, label) => {
+    return state.semesters[stage].map(sem => {
+      const subjs = semSubjects(stage, sem.id);
+      if (!subjs.length) return '';
+      const rows = subjs.map(s => {
+        const t=calcSubjectTotal(s);
+        const p=pct(t.scored,t.max);
+        return `<tr><td>${escHtml(s.name)}</td><td>${t.intScored}/${t.intMax}</td><td>${t.extS}/${t.extM}</td><td>${t.scored}/${t.max}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
+      }).join('');
+      return `<h3 style="margin:1rem 0 0.5rem;">${escHtml(sem.label)}</h3>
+      <table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+        <thead><tr><th>Subject</th><th>Internal</th><th>External</th><th>Total</th><th>%</th><th>Grade</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    }).join('');
+  };
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>REDUNDANT — Report Card</title>
+  <style>
+    body{font-family:Georgia,serif;max-width:900px;margin:2rem auto;padding:2rem;background:#fff;color:#222;}
+    h1{font-size:2rem;letter-spacing:0.05em;border-bottom:3px solid #c8922a;padding-bottom:0.5rem;}
+    h2{font-size:1.3rem;margin:2rem 0 0.5rem;color:#7a5618;}
+    h3{font-size:1rem;color:#555;}
+    table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+    th,td{padding:6px 10px;border:1px solid #ddd;text-align:left;}
+    th{background:#f5f0e8;}
+    .meta{font-size:0.75rem;color:#999;margin-top:0.25rem;}
+  </style></head>
+  <body>
+  <h1>REDUNDANT — Academic Report</h1>
+  <p class="meta">Generated ${now}</p>
+  <h2>SSLC</h2>
+  <table border="1" cellpadding="6"><thead><tr><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th></tr></thead><tbody>${sslcRows}</tbody></table>
+  <h2>Diploma</h2>${renderStageReport('diploma','Diploma')}
+  <h2>Engineering</h2>${renderStageReport('engineering','Engineering')}
+  </body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`REDUNDANT_report_${Date.now()}.html`; a.click();
+  URL.revokeObjectURL(url);
+  toast('Report card exported');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+function toast(msg) {
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  stack.appendChild(el);
+  setTimeout(()=>el.remove(), 2800);
+}
+
+// ══════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════
+function escHtml(str='') {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════
+async function boot() {
+  await initDB();
+  await loadAll();
+  renderDashboard();
+}
+
+boot();
+</script>
+</body>
+</html>

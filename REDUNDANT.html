@@ -749,6 +749,194 @@
     justify-content: flex-end;
     margin-bottom: 1rem;
   }
+
+  /* ── USER PROFILE MODAL ── */
+  .profile-modal {
+    max-width: 520px;
+  }
+
+  .profile-section {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--amber-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--amber);
+    flex-shrink: 0;
+    border: 1px solid var(--amber-dim);
+  }
+
+  .profile-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .profile-info p {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .stat-mini {
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    text-align: center;
+  }
+
+  .stat-mini-value {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--amber-light);
+  }
+
+  .stat-mini-label {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+  }
+
+  .developer-credit {
+    background: rgba(200,146,42,0.08);
+    border: 1px solid var(--amber-dim);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--amber);
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+
+  .developer-credit strong {
+    color: var(--amber-light);
+    font-weight: 600;
+  }
+
+  /* ── EDIT MODE ── */
+  .edit-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile-edit-form {
+    display: none;
+  }
+
+  .profile-edit-form.active {
+    display: block;
+  }
+
+  .profile-view {
+    display: block;
+  }
+
+  .profile-view.hidden {
+    display: none;
+  }
+
+  .edit-form-field {
+    margin-bottom: 1rem;
+  }
+
+  .edit-form-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .edit-form-input {
+    width: 100%;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s;
+  }
+
+  .edit-form-input:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+
+  .photo-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--amber-dim);
+    margin: 0.5rem 0;
+  }
+
+  .photo-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--amber-glow);
+    border: 1px solid var(--amber-dim);
+    color: var(--amber);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+
+  .photo-upload-btn:hover {
+    background: rgba(200, 146, 42, 0.2);
+    border-color: var(--amber);
+  }
+
+  #profilePhotoInput {
+    display: none;
+  }
+
 </style>
 </head>
 <body>
@@ -780,6 +968,7 @@
       </button>
     </nav>
     <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showUserProfile()">👤 Profile</button>
       <button class="btn btn-ghost btn-sm" onclick="exportJSON()">⤓ Export</button>
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">⤒ Import</button>
       <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
@@ -931,8 +1120,110 @@
   </div>
 </div>
 
+<!-- ══ USER PROFILE MODAL ══ -->
+<div class="modal-overlay" id="profileOverlay" onclick="closeProfileModal(event)">
+  <div class="modal profile-modal" id="profileBox">
+    <div class="modal-title">👤 Your Profile & Dashboard</div>
+    
+    <div class="edit-toggle" id="editToggle">
+      <button class="btn btn-amber btn-sm" onclick="toggleProfileEdit(true)" id="editBtn">✎ Edit Profile</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleProfileEdit(false)" id="doneBtn" style="display:none;">✓ Done Editing</button>
+    </div>
+
+    <!-- View Mode -->
+    <div class="profile-view" id="profileView">
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div class="profile-info">
+            <h3 id="profileName">User Name</h3>
+            <p id="profileEmail">user@example.com</p>
+            <p id="profileDate" style="color: var(--amber); margin-top: 0.4rem;">Profile Created Today</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-secondary); margin-bottom: 0.75rem;">📊 Academic Statistics</div>
+        <div class="stats-grid">
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="statSSLC">-</div>
+            <div class="stat-mini-label">SSLC Subjects</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="statDiploma">-</div>
+            <div class="stat-mini-label">Diploma Subjects</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="statEngineering">-</div>
+            <div class="stat-mini-label">Engineering Subjects</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="developer-credit">
+        🔧 Developed by <strong>Microintel</strong>
+      </div>
+
+      <div style="margin-bottom: 1rem;"></div>
+
+      <div class="profile-section">
+        <div style="font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--amber); margin-bottom: 0.75rem;">ℹ️ Application Info</div>
+        <div style="font-family: var(--font-body); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+          <p style="margin-bottom: 0.5rem;"><strong>App:</strong> REDUNDANT — Academic Vault</p>
+          <p style="margin-bottom: 0.5rem;"><strong>Version:</strong> 1.0.0</p>
+          <p style="margin-bottom: 0.5rem;"><strong>Purpose:</strong> Complete academic record management</p>
+          <p style="color: var(--amber); margin-top: 0.75rem;"><strong>© 2026 Microintel</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div class="profile-edit-form" id="profileEditForm">
+      <div class="profile-section">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div id="photoPreviewContainer">
+            <img id="photoPreview" class="photo-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23c8922a' opacity='0.2'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23c8922a'%3EU%3C/text%3E%3C/svg%3E" alt="profile">
+          </div>
+          <button class="photo-upload-btn" onclick="document.getElementById('profilePhotoInput').click()">
+            📷 Upload Photo
+          </button>
+          <input type="file" id="profilePhotoInput" accept="image/*" onchange="handlePhotoUpload(event)">
+        </div>
+
+        <div class="edit-form-field">
+          <label class="edit-form-label">Full Name</label>
+          <input type="text" id="editNameInput" class="edit-form-input" placeholder="Enter your name">
+        </div>
+
+        <div class="edit-form-field">
+          <label class="edit-form-label">Email Address</label>
+          <input type="email" id="editEmailInput" class="edit-form-input" placeholder="Enter your email">
+        </div>
+      </div>
+
+      <div class="developer-credit" style="margin: 1rem 0;">
+        🔧 Developed by <strong>Microintel</strong>
+      </div>
+    </div>
+
+    <div class="modal-footer" id="profileFooter">
+      <button class="btn btn-solid" id="pdfBtnView" onclick="generatePDFReport()">📄 Generate PDF Report</button>
+      <button class="btn btn-ghost" onclick="closeProfileModal()">Close</button>
+    </div>
+
+    <div class="modal-footer" id="profileEditFooter" style="display:none;">
+      <button class="btn btn-solid" onclick="saveProfileChanges()">💾 Save Changes</button>
+      <button class="btn btn-ghost" onclick="toggleProfileEdit(false)">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ TOAST STACK ══ -->
 <div class="toast-stack" id="toastStack"></div>
+
+<!-- PDF Generation Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 // ══════════════════════════════════════════════════
@@ -1923,6 +2214,449 @@ function toast(msg) {
 // ══════════════════════════════════════════════════
 function escHtml(str='') {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════════════════
+//  USER PROFILE
+// ══════════════════════════════════════════════════
+let userProfile = {
+  name: localStorage.getItem('userName') || 'User',
+  email: localStorage.getItem('userEmail') || 'user@example.com',
+  createdDate: localStorage.getItem('userCreatedDate') || new Date().toLocaleDateString('en-IN'),
+  photo: localStorage.getItem('userPhoto') || null
+};
+
+function saveUserProfile(name, email, photo = null) {
+  userProfile.name = name;
+  userProfile.email = email;
+  localStorage.setItem('userName', name);
+  localStorage.setItem('userEmail', email);
+  if (photo !== null) {
+    userProfile.photo = photo;
+    localStorage.setItem('userPhoto', photo);
+  }
+  if (!localStorage.getItem('userCreatedDate')) {
+    userProfile.createdDate = new Date().toLocaleDateString('en-IN');
+    localStorage.setItem('userCreatedDate', userProfile.createdDate);
+  }
+}
+
+function toggleProfileEdit(isEdit) {
+  const viewMode = document.getElementById('profileView');
+  const editMode = document.getElementById('profileEditForm');
+  const editBtn = document.getElementById('editBtn');
+  const doneBtn = document.getElementById('doneBtn');
+  const viewFooter = document.getElementById('profileFooter');
+  const editFooter = document.getElementById('profileEditFooter');
+
+  if (isEdit) {
+    viewMode.classList.add('hidden');
+    editMode.classList.add('active');
+    editBtn.style.display = 'none';
+    doneBtn.style.display = 'inline-flex';
+    viewFooter.style.display = 'none';
+    editFooter.style.display = 'flex';
+
+    // Populate edit fields
+    document.getElementById('editNameInput').value = userProfile.name;
+    document.getElementById('editEmailInput').value = userProfile.email;
+    
+    // Show photo preview
+    if (userProfile.photo) {
+      document.getElementById('photoPreview').src = userProfile.photo;
+    }
+  } else {
+    viewMode.classList.remove('hidden');
+    editMode.classList.remove('active');
+    editBtn.style.display = 'inline-flex';
+    doneBtn.style.display = 'none';
+    viewFooter.style.display = 'flex';
+    editFooter.style.display = 'none';
+  }
+}
+
+function handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const photoData = e.target.result;
+    document.getElementById('photoPreview').src = photoData;
+    // Store temporarily, will be saved when user clicks Save Changes
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProfileChanges() {
+  const newName = document.getElementById('editNameInput').value.trim();
+  const newEmail = document.getElementById('editEmailInput').value.trim();
+  const photoData = document.getElementById('photoPreview').src;
+
+  if (!newName) {
+    alert('Please enter your name');
+    return;
+  }
+
+  if (!newEmail || !newEmail.includes('@')) {
+    alert('Please enter a valid email');
+    return;
+  }
+
+  // Save profile with new photo
+  saveUserProfile(newName, newEmail, photoData);
+
+  // Update display and close edit mode
+  showUserProfile();
+  toggleProfileEdit(false);
+  toast('✓ Profile updated successfully!');
+}
+
+function showUserProfile() {
+  // Update profile display
+  const initial = (userProfile.name || 'U')[0].toUpperCase();
+  
+  // Set avatar
+  const avatarEl = document.getElementById('profileAvatar');
+  if (userProfile.photo) {
+    avatarEl.innerHTML = `<img src="${userProfile.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  } else {
+    avatarEl.innerHTML = initial;
+  }
+
+  document.getElementById('profileName').textContent = userProfile.name || 'User';
+  document.getElementById('profileEmail').textContent = userProfile.email || 'user@example.com';
+  document.getElementById('profileDate').textContent = 'Created: ' + userProfile.createdDate;
+
+  // Update stats
+  document.getElementById('statSSLC').textContent = state.sslc.length || '0';
+  document.getElementById('statDiploma').textContent = state.diploma.length || '0';
+  document.getElementById('statEngineering').textContent = state.engineering.length || '0';
+
+  // Show modal
+  document.getElementById('profileOverlay').classList.add('open');
+}
+
+function closeProfileModal(event) {
+  if (event && event.target.id !== 'profileOverlay') return;
+  document.getElementById('profileOverlay').classList.remove('open');
+  // Reset edit mode when closing
+  if (document.getElementById('profileEditForm').classList.contains('active')) {
+    toggleProfileEdit(false);
+  }
+}
+
+document.getElementById('profileOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeProfileModal(e);
+});
+
+function generatePDFReport() {
+  try {
+    const now = new Date().toLocaleString('en-IN');
+    const reportDate = new Date().toISOString().slice(0, 10);
+
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body {
+          font-family: Georgia, serif;
+          background: #fff;
+          color: #222;
+          line-height: 1.6;
+        }
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 30px;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 3px solid #c8922a;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 28px;
+          letter-spacing: 0.05em;
+          color: #000;
+        }
+        .header p {
+          margin: 5px 0;
+          color: #666;
+          font-size: 12px;
+        }
+        .header .credit {
+          color: #c8922a;
+          font-weight: bold;
+          margin-top: 10px;
+        }
+        .section {
+          margin: 25px 0;
+          padding: 15px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          background: #f9f7f3;
+        }
+        .section h2 {
+          margin: 0 0 15px 0;
+          font-size: 16px;
+          color: #7a5618;
+          border-bottom: 1px solid #c8922a;
+          padding-bottom: 8px;
+        }
+        .profile-info {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          margin-bottom: 15px;
+        }
+        .profile-photo {
+          grid-column: 1 / -1;
+          text-align: center;
+          margin-bottom: 15px;
+        }
+        .profile-photo img {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #c8922a;
+        }
+        .info-field {
+          font-size: 12px;
+        }
+        .info-label {
+          font-weight: bold;
+          color: #555;
+          margin-bottom: 3px;
+        }
+        .info-value {
+          color: #c8922a;
+        }
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 12px;
+          margin: 15px 0;
+        }
+        .stat-box {
+          background: #fff;
+          padding: 12px;
+          border: 1px solid #c8922a;
+          border-radius: 4px;
+          text-align: center;
+        }
+        .stat-value {
+          font-size: 24px;
+          font-weight: bold;
+          color: #c8922a;
+        }
+        .stat-label {
+          font-size: 11px;
+          color: #666;
+          margin-top: 5px;
+          text-transform: uppercase;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 15px 0;
+          font-size: 11px;
+        }
+        table th {
+          background: #f0e8dc;
+          padding: 8px;
+          text-align: left;
+          border: 1px solid #ddd;
+          font-weight: bold;
+        }
+        table td {
+          padding: 6px 8px;
+          border: 1px solid #ddd;
+        }
+        table tr:nth-child(even) {
+          background: #fafaf8;
+        }
+        .footer {
+          margin-top: 30px;
+          padding-top: 15px;
+          border-top: 2px solid #c8922a;
+          text-align: center;
+          font-size: 10px;
+          color: #999;
+        }
+        .microintel-badge {
+          background: rgba(200, 146, 42, 0.1);
+          border: 1px solid #c8922a;
+          padding: 10px;
+          border-radius: 4px;
+          text-align: center;
+          margin: 15px 0;
+          color: #c8922a;
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>REDUNDANT — Academic Report</h1>
+          <p>Academic Vault · Complete Record Management</p>
+          <p>Generated on ${now}</p>
+          <div class="credit">🔧 Developed by <strong>Microintel</strong></div>
+        </div>
+
+        <div class="section">
+          <h2>👤 User Profile</h2>
+          <div class="profile-info">
+            ${userProfile.photo ? `
+            <div class="profile-photo">
+              <img src="${userProfile.photo}" alt="profile photo">
+            </div>
+            ` : ''}
+            <div class="info-field">
+              <div class="info-label">Name</div>
+              <div class="info-value">${escHtml(userProfile.name)}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-label">Email</div>
+              <div class="info-value">${escHtml(userProfile.email)}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-label">Account Created</div>
+              <div class="info-value">${userProfile.createdDate}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-label">Report Generated</div>
+              <div class="info-value">${reportDate}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>📊 Academic Statistics</h2>
+          <div class="stats">
+            <div class="stat-box">
+              <div class="stat-value">${state.sslc.length}</div>
+              <div class="stat-label">SSLC Subjects</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">${state.diploma.length}</div>
+              <div class="stat-label">Diploma Subjects</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">${state.engineering.length}</div>
+              <div class="stat-label">Engineering Subjects</div>
+            </div>
+          </div>
+        </div>
+
+        ${state.sslc.length > 0 ? `
+        <div class="section">
+          <h2>📚 SSLC Records</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Scored</th>
+                <th>Max</th>
+                <th>%</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.sslc.map(s => {
+                const p = pct(+s.scored || 0, +s.max || 0);
+                return `<tr>
+                  <td>${escHtml(s.name)}</td>
+                  <td>${s.scored}</td>
+                  <td>${s.max}</td>
+                  <td>${p}%</td>
+                  <td>${grade(p)}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        ${state.diploma.length > 0 ? `
+        <div class="section">
+          <h2>🎓 Diploma Records</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Semester</th>
+                <th>Subject</th>
+                <th>Int/Ext</th>
+                <th>Total</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.diploma.slice(0, 15).map(s => {
+                const t = calcSubjectTotal(s);
+                const p = pct(t.scored, t.max);
+                const sem = state.semesters.diploma.find(x => x.id === s.sem);
+                return `<tr>
+                  <td>${sem ? escHtml(sem.label) : 'N/A'}</td>
+                  <td>${escHtml(s.name)}</td>
+                  <td>${t.intScored}/${t.extS}</td>
+                  <td>${t.scored}/${t.max}</td>
+                  <td>${p}%</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        <div class="microintel-badge">
+          🔧 Developed by <strong>Microintel</strong><br>
+          REDUNDANT — Academic Vault v1.0.0
+        </div>
+
+        <div class="footer">
+          <p>This is a confidential academic report. © 2026 Microintel. All rights reserved.</p>
+          <p>Generated by REDUNDANT Application</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    const element = document.createElement('div');
+    element.innerHTML = htmlContent;
+
+    const filename = `${userProfile.name.replace(/\s+/g, '_')}_Academic_Report_${reportDate}.pdf`;
+
+    const options = {
+      margin: 10,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+    };
+
+    html2pdf().set(options).from(element).save();
+    toast('✓ PDF Report generated successfully!');
+
+  } catch (e) {
+    console.error('PDF Error:', e);
+    toast('Failed to generate PDF: ' + e.message);
+  }
+}
+
+// Initialize user profile on first load
+if (!localStorage.getItem('userName')) {
+  // Prompt for user details on first visit
+  const name = prompt('Welcome! Enter your name:') || 'Student';
+  const email = prompt('Enter your email:') || 'student@example.com';
+  saveUserProfile(name, email);
 }
 
 // ══════════════════════════════════════════════════

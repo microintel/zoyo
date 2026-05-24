@@ -4,69 +4,55 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REDUNDANT — Academic Vault</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg-deep: #000;
-    --bg-card: #000;
-    --bg-raised: #1a1714;
-    --bg-hover: #221f1b;
-    --amber: #c8922a;
-    --amber-light: #e8b04a;
-    --amber-dim: #7a5618;
-    --amber-glow: rgba(200,146,42,0.12);
-    --text-primary: #e8dcc8;
-    --text-secondary: #8a7a62;
-    --text-dim: #4a4035;
-    --red: #c84a3a;
-    --green: #4a8a5a;
-    --border: rgba(200,146,42,0.15);
-    --border-strong: rgba(200,146,42,0.35);
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'EB Garamond', Georgia, serif;
-    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
-    --radius: 3px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.6);
+    --bg-deep:       #0d0d0d;
+    --bg-card:       #141414;
+    --bg-raised:     #1c1c1c;
+    --bg-hover:      #222;
+    --green:         #22c55e;
+    --green-light:   #4ade80;
+    --green-dim:     #166534;
+    --green-glow:    rgba(34,197,94,0.10);
+    --text-primary:  #f0f0f0;
+    --text-secondary:#9ca3af;
+    --text-dim:      #4b5563;
+    --red:           #ef4444;
+    --border:        rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --font-display:  -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-body:     -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono:     'SF Mono', 'Fira Code', 'Consolas', monospace;
+    --radius:        6px;
+    --shadow:        0 2px 12px rgba(0,0,0,0.5);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
     background: var(--bg-deep);
     color: var(--text-primary);
     font-family: var(--font-body);
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.6;
-  }
-
   /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg-deep); }
-  ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
   /* ── LAYOUT ── */
   .app { display: flex; flex-direction: column; min-height: 100vh; }
 
   .masthead {
     border-bottom: 1px solid var(--border-strong);
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     background: var(--bg-card);
     position: sticky;
     top: 0;
@@ -80,28 +66,28 @@
   .masthead-left {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1rem 0;
+    gap: 1rem;
+    padding: 0.85rem 0;
   }
 
   .logo-mark {
     font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--amber);
-    letter-spacing: 0.12em;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     cursor: pointer;
     transition: color 0.2s;
   }
-  .logo-mark:hover { color: var(--amber-light); }
+  .logo-mark:hover { color: var(--green-light); }
 
   .logo-sub {
     font-family: var(--font-mono);
-    font-size: 0.6rem;
-    color: var(--text-secondary);
+    font-size: 0.58rem;
+    color: var(--text-dim);
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     margin-top: 2px;
   }
 
@@ -112,43 +98,41 @@
   }
 
   .nav-tab {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
     color: var(--text-secondary);
-    padding: 0 1.25rem;
+    padding: 0 1rem;
     border: none;
     background: none;
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.15s;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   .nav-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
-  .nav-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+  .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
 
   .nav-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .btn {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 0.4rem 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.42rem 0.85rem;
     border-radius: var(--radius);
     border: 1px solid;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     background: none;
   }
 
@@ -156,33 +140,33 @@
     border-color: var(--border-strong);
     color: var(--text-secondary);
   }
-  .btn-ghost:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-glow); }
+  .btn-ghost:hover { border-color: var(--green); color: var(--green); background: var(--green-glow); }
 
   .btn-amber {
-    border-color: var(--amber);
-    color: var(--amber);
-    background: var(--amber-glow);
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-glow);
   }
-  .btn-amber:hover { background: rgba(200,146,42,0.25); color: var(--amber-light); }
+  .btn-amber:hover { background: rgba(34,197,94,0.18); color: var(--green-light); }
 
   .btn-solid {
-    border-color: var(--amber);
-    background: var(--amber);
-    color: var(--bg-deep);
+    border-color: var(--green);
+    background: var(--green);
+    color: #000;
     font-weight: 600;
   }
-  .btn-solid:hover { background: var(--amber-light); }
+  .btn-solid:hover { background: var(--green-light); border-color: var(--green-light); }
 
   .btn-danger {
-    border-color: var(--red);
+    border-color: rgba(239,68,68,0.5);
     color: var(--red);
   }
-  .btn-danger:hover { background: rgba(200,74,58,0.15); }
+  .btn-danger:hover { background: rgba(239,68,68,0.12); border-color: var(--red); }
 
-  .btn-sm { font-size: 0.58rem; padding: 0.3rem 0.65rem; }
+  .btn-sm { font-size: 0.72rem; padding: 0.28rem 0.6rem; }
 
   /* ── MAIN CONTENT ── */
-  .main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .main { flex: 1; padding: 1.75rem 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
 
   /* ── SECTIONS ── */
   .section { display: none; }
@@ -190,45 +174,41 @@
 
   /* ── DASHBOARD ── */
   .dash-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
   }
 
   .dash-title {
     font-family: var(--font-display);
-    font-size: 2.8rem;
-    font-weight: 900;
+    font-size: 2rem;
+    font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    line-height: 1.2;
   }
 
-  .dash-title span { color: var(--amber); font-style: italic; }
+  .dash-title span { color: var(--green); }
 
   .dash-subtitle {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
   }
 
   .stage-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .stage-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.5rem;
+    padding: 1.25rem;
     cursor: pointer;
-    transition: all 0.25s;
+    transition: all 0.18s;
     position: relative;
     overflow: hidden;
   }
@@ -237,121 +217,112 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: var(--amber);
+    background: var(--green);
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.3s;
+    transition: transform 0.25s;
   }
-  .stage-card:hover { border-color: var(--border-strong); background: var(--bg-raised); }
+  .stage-card:hover { border-color: var(--green-dim); background: var(--bg-raised); }
   .stage-card:hover::before { transform: scaleX(1); }
 
   .stage-card-label {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--amber);
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
   }
 
   .stage-card-name {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .stage-card-pct {
     font-family: var(--font-mono);
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: var(--amber);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--green);
     line-height: 1;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
   }
 
   .stage-card-meta {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
   }
 
   .progress-bar {
     height: 3px;
     background: var(--bg-hover);
     border-radius: 2px;
-    margin-top: 1rem;
+    margin-top: 0.9rem;
     overflow: hidden;
   }
   .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+    background: var(--green);
     border-radius: 2px;
-    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    transition: width 0.7s ease;
   }
 
   .dash-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
   }
 
   .stat-cell {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.1rem;
     border-radius: var(--radius);
   }
 
   .stat-label {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--text-secondary);
-    margin-bottom: 0.35rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
   }
 
   .stat-value {
     font-family: var(--font-mono);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 600;
-    color: var(--amber-light);
+    color: var(--green-light);
   }
 
   .stat-sub {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
-    font-style: italic;
-    margin-top: 0.15rem;
+    margin-top: 0.1rem;
   }
 
   .chart-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .chart-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.25rem;
+    padding: 1.1rem;
   }
 
   .chart-title {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--amber);
-    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 0.85rem;
   }
 
   /* ── STAGE SECTIONS ── */
@@ -359,103 +330,135 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--border);
   }
 
   .stage-title {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    font-weight: 900;
+    font-size: 1.6rem;
+    font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
   }
 
-  .stage-title em { color: var(--amber); font-style: italic; }
+  .stage-title em { color: var(--green); font-style: normal; }
 
   .semester-block {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .semester-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.75rem;
-    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.6rem;
+    padding: 0.65rem 0.9rem;
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     cursor: pointer;
+    transition: background 0.15s;
   }
+  .semester-header:hover { background: var(--bg-hover); }
 
   .semester-label {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--text-primary);
   }
 
   .semester-avg {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--amber);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--green);
+    background: var(--green-glow);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    border: 1px solid var(--green-dim);
   }
 
   /* ── TABLE ── */
   .subject-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.85rem;
   }
 
   .subject-table th {
     text-align: left;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.58rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--text-secondary);
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-deep);
-    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border-strong);
+    background: var(--bg-raised);
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .subject-table td {
-    padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid rgba(200,146,42,0.06);
-    vertical-align: middle;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
     color: var(--text-primary);
   }
 
-  .subject-table tr:hover td { background: var(--bg-hover); }
-
   .subject-table tr:last-child td { border-bottom: none; }
+  .subject-table tbody tr:hover td { background: var(--bg-raised); }
 
   .marks-badge {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: var(--amber-light);
+    color: #fff;
   }
 
   .pct-badge {
     display: inline-block;
     font-family: var(--font-mono);
-    font-size: 0.62rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 2px;
-    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
   }
 
-  .pct-high { background: rgba(74,138,90,0.2); color: #7acc8a; }
-  .pct-mid  { background: rgba(200,146,42,0.2); color: var(--amber-light); }
-  .pct-low  { background: rgba(200,74,58,0.2); color: #e07060; }
+  .pct-high { background: rgba(34,197,94,0.15); color: var(--green-light); }
+  .pct-mid  { background: rgba(250,204,21,0.12); color: #fbbf24; }
+  .pct-low  { background: rgba(239,68,68,0.12); color: #f87171; }
 
-  .action-cell { display: flex; gap: 0.35rem; }
+  /* ── INTERNAL COMPONENTS DISPLAY ── */
+  .comp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .comp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+
+  .comp-pill-name {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+  }
+
+  .comp-pill-score {
+    color: var(--green-light);
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background: rgba(34,197,94,0.1);
+    padding: 0.05rem 0.3rem;
+    border-radius: 3px;
+  }
+
+  .action-cell { display: flex; gap: 0.3rem; }
 
   /* ── SSLC TABLE ── */
   .sslc-table-wrap {
@@ -469,7 +472,7 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.7);
     z-index: 500;
     display: flex;
     align-items: center;
@@ -477,7 +480,7 @@
     padding: 1rem;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.18s;
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
 
@@ -485,23 +488,22 @@
     background: var(--bg-raised);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: 2rem;
-    max-width: 640px;
+    padding: 1.75rem;
+    max-width: 600px;
     width: 100%;
-    max-height: 85vh;
+    max-height: 88vh;
     overflow-y: auto;
     box-shadow: var(--shadow);
-    transform: translateY(12px);
-    transition: transform 0.2s;
+    transform: translateY(10px);
+    transition: transform 0.18s;
   }
   .modal-overlay.open .modal { transform: translateY(0); }
 
   .modal-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
   }
@@ -519,25 +521,25 @@
   .form-field { display: flex; flex-direction: column; gap: 0.3rem; }
 
   .form-label {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
+    font-size: 0.72rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.08em;
     color: var(--text-secondary);
   }
 
   .form-input {
     background: var(--bg-deep);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius);
     padding: 0.5rem 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
     color: var(--text-primary);
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
     width: 100%;
   }
-  .form-input:focus { outline: none; border-color: var(--amber); }
+  .form-input:focus { outline: none; border-color: var(--green); }
   .form-input::placeholder { color: var(--text-dim); }
 
   select.form-input { cursor: pointer; }
@@ -550,11 +552,11 @@
   }
 
   .components-title {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--amber);
+    letter-spacing: 0.08em;
+    color: var(--green);
     margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
@@ -571,64 +573,61 @@
 
   .remove-comp {
     background: none;
-    border: 1px solid rgba(200,74,58,0.4);
+    border: 1px solid rgba(239,68,68,0.4);
     color: var(--red);
     border-radius: var(--radius);
     cursor: pointer;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.15s;
   }
-  .remove-comp:hover { background: rgba(200,74,58,0.15); }
+  .remove-comp:hover { background: rgba(239,68,68,0.12); }
 
   .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    padding-top: 0.9rem;
     border-top: 1px solid var(--border);
   }
 
   /* ── CONFIRM DIALOG ── */
   .confirm-box {
-    max-width: 380px;
+    max-width: 360px;
     text-align: center;
   }
 
   .confirm-msg {
-    font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-style: italic;
+    margin-bottom: 1.25rem;
   }
 
   /* ── TOAST ── */
   .toast-stack {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 1.25rem;
+    right: 1.25rem;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .toast {
     background: var(--bg-raised);
     border: 1px solid var(--border-strong);
-    border-left: 3px solid var(--amber);
+    border-left: 3px solid var(--green);
     padding: 0.6rem 1rem;
     border-radius: var(--radius);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.8rem;
     color: var(--text-primary);
     box-shadow: var(--shadow);
-    animation: slideIn 0.2s ease;
+    animation: slideIn 0.18s ease;
   }
 
   @keyframes slideIn {
@@ -639,49 +638,43 @@
   /* ── EMPTY STATE ── */
   .empty-state {
     text-align: center;
-    padding: 3rem 2rem;
-    border: 1px dashed var(--border);
+    padding: 2.5rem 1.5rem;
+    border: 1px dashed var(--border-strong);
     border-radius: var(--radius);
     background: var(--bg-card);
   }
 
   .empty-state-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    opacity: 0.4;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
   }
 
   .empty-state-text {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text-secondary);
-    font-style: italic;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
   }
 
   .empty-state-sub {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
+    font-size: 0.75rem;
     color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
   }
 
   /* ── DIVIDER RULE ── */
   .rule {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
+    margin: 1.25rem 0;
   }
 
   /* ── INLINE EDIT ── */
   .inline-input {
     background: transparent;
     border: none;
-    border-bottom: 1px solid var(--amber);
+    border-bottom: 1px solid var(--green);
     color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     padding: 0.15rem 0.25rem;
     width: 60px;
     outline: none;
@@ -697,17 +690,17 @@
   /* ── EXAM TYPE BADGE ── */
   .exam-badge {
     display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
+    font-size: 0.62rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     padding: 0.1rem 0.35rem;
-    border-radius: 2px;
+    border-radius: 3px;
     border: 1px solid;
+    font-weight: 500;
   }
-  .exam-regular { border-color: var(--amber-dim); color: var(--amber); }
-  .exam-arrear  { border-color: rgba(200,74,58,0.4); color: #e07060; }
-  .exam-lab     { border-color: rgba(74,138,90,0.4); color: #7acc8a; }
+  .exam-regular { border-color: var(--green-dim); color: var(--green); background: var(--green-glow); }
+  .exam-arrear  { border-color: rgba(239,68,68,0.4); color: #f87171; background: rgba(239,68,68,0.08); }
+  .exam-lab     { border-color: rgba(96,165,250,0.4); color: #93c5fd; background: rgba(96,165,250,0.08); }
 
   /* ── IMPORT HIDDEN ── */
   #importFile { display: none; }
@@ -717,18 +710,182 @@
 
   /* ── DECORATION LINES ── */
   .deco-line {
-    width: 40px;
+    width: 32px;
     height: 2px;
-    background: var(--amber);
-    margin: 0.5rem 0;
+    background: var(--green);
+    margin: 0.4rem 0;
+  }
+    color: var(--text-primary);
   }
 
-  /* ── RESPONSIVE ── */
+  /* ══════════════════════════════════════
+     RESPONSIVE — TABLET  (≤860px)
+  ══════════════════════════════════════ */
   @media (max-width: 860px) {
-    .stage-grid { grid-template-columns: 1fr; }
+    .stage-grid { grid-template-columns: 1fr 1fr; }
     .dash-stats { grid-template-columns: repeat(2,1fr); }
-    .chart-row { grid-template-columns: 1fr; }
-    .masthead { flex-wrap: wrap; }
+    .chart-row  { grid-template-columns: 1fr; }
+    .masthead   { flex-wrap: wrap; padding: 0 1rem; }
+    .main       { padding: 1.25rem 1rem; }
+    .dash-title { font-size: 1.6rem; }
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE — MOBILE  (≤600px)
+  ══════════════════════════════════════ */
+  @media (max-width: 600px) {
+
+    .masthead {
+      flex-direction: column;
+      padding: 0;
+      gap: 0;
+    }
+
+    .masthead-left {
+      padding: 0.75rem 1rem;
+      justify-content: space-between;
+      width: 100%;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-actions { gap: 0.3rem; }
+
+    .nav-actions .btn-sm {
+      font-size: 0.68rem;
+      padding: 0.3rem 0.5rem;
+    }
+
+    .nav-tabs {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+      padding: 0 0.25rem;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      flex-shrink: 0;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.78rem;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-tab.active { border-bottom-color: var(--green); }
+
+    /* ── MAIN PADDING ── */
+    .main { padding: 1rem 0.75rem; }
+
+    /* ── DASHBOARD ── */
+    .dash-title { font-size: 1.6rem; }
+    .stage-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+    .dash-stats { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .stat-cell  { padding: 0.75rem 1rem; }
+    .stat-value { font-size: 1.1rem; }
+    .chart-row  { grid-template-columns: 1fr; gap: 0.75rem; }
+
+    /* ── STAGE HEADERS ── */
+    .stage-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .stage-title { font-size: 1.5rem; }
+
+    /* ── SEMESTER HEADER ── */
+    .semester-header {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem 0.75rem;
+    }
+
+    /* ── TABLE → CARD LAYOUT on mobile ── */
+    .subject-table thead { display: none; }
+
+    .subject-table,
+    .subject-table tbody,
+    .subject-table tr {
+      display: block;
+      width: 100%;
+    }
+
+    .subject-table tr {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.6rem;
+      padding: 0.75rem;
+      background: var(--bg-card);
+      position: relative;
+    }
+    .subject-table tr:hover { background: var(--bg-hover); }
+
+    .subject-table td {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.3rem 0;
+      border-bottom: none;
+      font-size: 0.82rem;
+    }
+
+    /* Data-label pseudo-labels */
+    .subject-table td::before {
+      content: attr(data-label);
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      min-width: 70px;
+      flex-shrink: 0;
+      padding-top: 0.1rem;
+    }
+
+    /* Subject name cell: full width, no label */
+    .subject-table td:first-child {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.35rem;
+    }
+    .subject-table td:first-child::before { display: none; }
+
+    /* Action cell: right-aligned */
+    .subject-table td:last-child {
+      justify-content: flex-end;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.25rem;
+    }
+    .subject-table td:last-child::before { display: none; }
+
+    /* Internal comp list: full width */
+    .comp-list { flex-direction: column; gap: 0.25rem; }
+
+    /* ── MODAL ── */
+    .modal {
+      padding: 1.25rem;
+      max-height: 92vh;
+      margin: 0.5rem;
+    }
+    .modal-title { font-size: 1.2rem; }
+
+    .form-row        { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: 1fr 1fr; }
+
+    /* ── PROFILE ── */
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE — SMALL  (≤380px)
+  ══════════════════════════════════════ */
+  @media (max-width: 380px) {
+    .dash-title     { font-size: 1.35rem; }
+    .stage-card-pct { font-size: 2rem; }
+    .dash-stats     { grid-template-columns: 1fr; }
+    .logo-sub       { display: none; }
   }
 
   /* ── ANIMATIONS ── */
@@ -771,19 +928,18 @@
   }
 
   .profile-avatar {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    background: var(--amber-glow);
+    background: var(--green-glow);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: var(--amber);
+    color: var(--green);
     flex-shrink: 0;
-    border: 1px solid var(--amber-dim);
+    border: 1px solid var(--green-dim);
   }
 
   .profile-info h3 {
@@ -819,32 +975,29 @@
     font-family: var(--font-mono);
     font-size: 1.3rem;
     font-weight: 600;
-    color: var(--amber-light);
+    color: var(--green-light);
   }
 
   .stat-mini-label {
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
+    font-size: 0.62rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     margin-top: 0.3rem;
   }
 
   .developer-credit {
-    background: rgba(200,146,42,0.08);
-    border: 1px solid var(--amber-dim);
+    background: var(--green-glow);
+    border: 1px solid var(--green-dim);
     border-radius: var(--radius);
     padding: 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    color: var(--amber);
+    font-size: 0.75rem;
+    color: var(--green);
     text-align: center;
-    letter-spacing: 0.1em;
   }
 
   .developer-credit strong {
-    color: var(--amber-light);
+    color: var(--green-light);
     font-weight: 600;
   }
 
@@ -899,7 +1052,7 @@
 
   .edit-form-input:focus {
     outline: none;
-    border-color: var(--amber);
+    border-color: var(--green);
   }
 
   .photo-preview {
@@ -907,7 +1060,7 @@
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--amber-dim);
+    border: 2px solid var(--green-dim);
     margin: 0.5rem 0;
   }
 
@@ -915,22 +1068,19 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: var(--amber-glow);
-    border: 1px solid var(--amber-dim);
-    color: var(--amber);
+    background: var(--green-glow);
+    border: 1px solid var(--green-dim);
+    color: var(--green);
     padding: 0.5rem 0.75rem;
     border-radius: var(--radius);
     cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: all 0.2s;
+    font-size: 0.75rem;
+    transition: all 0.15s;
   }
 
   .photo-upload-btn:hover {
-    background: rgba(200, 146, 42, 0.2);
-    border-color: var(--amber);
+    background: rgba(34,197,94,0.18);
+    border-color: var(--green);
   }
 
   #profilePhotoInput {
@@ -1022,8 +1172,9 @@
           <thead>
             <tr>
               <th>Subject</th>
-              <th>Scored</th>
-              <th>Max</th>
+              <th>Internals</th>
+              <th>External</th>
+              <th>Total</th>
               <th>%</th>
               <th>Grade</th>
               <th></th>
@@ -1084,28 +1235,54 @@
         <div class="dash-subtitle">Visual breakdown of your academic journey</div>
       </div>
 
-      <div class="chart-row" style="grid-template-columns:1fr;">
+      <!-- Row 1: Diploma + Engineering semester bars -->
+      <div class="chart-row">
         <div class="chart-card">
           <div class="chart-title">Semester-wise Average % — Diploma</div>
           <div class="chart-wrap" style="height:220px;"><canvas id="chartDipSem"></canvas></div>
         </div>
-      </div>
-      <div class="chart-row" style="grid-template-columns:1fr;">
         <div class="chart-card">
           <div class="chart-title">Semester-wise Average % — Engineering</div>
           <div class="chart-wrap" style="height:220px;"><canvas id="chartEngSem"></canvas></div>
         </div>
       </div>
+
+      <!-- Row 2: Grade distribution pie + Stage comparison bar -->
       <div class="chart-row">
         <div class="chart-card">
-          <div class="chart-title">SSLC Subject Radar</div>
-          <div class="chart-wrap" style="height:260px;"><canvas id="chartSSLCRadar"></canvas></div>
+          <div class="chart-title">Grade Distribution — All Subjects</div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartGradePie"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-title">Stage Comparison</div>
           <div class="chart-wrap" style="height:260px;"><canvas id="chartStageComp"></canvas></div>
         </div>
       </div>
+
+      <!-- Row 3: SSLC subject bars + SSLC radar -->
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">SSLC Subject-wise Marks %</div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartSSLCBar"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">SSLC Subject Radar</div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="chartSSLCRadar"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Row 4: Pass/Fail pie + top-subjects horizontal bar -->
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">Pass vs Fail — All Subjects</div>
+          <div class="chart-wrap" style="height:240px;"><canvas id="chartPassFail"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top 8 Subjects by %</div>
+          <div class="chart-wrap" style="height:240px;"><canvas id="chartTop8"></canvas></div>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -1138,7 +1315,7 @@
           <div class="profile-info">
             <h3 id="profileName">User Name</h3>
             <p id="profileEmail">user@example.com</p>
-            <p id="profileDate" style="color: var(--amber); margin-top: 0.4rem;">Profile Created Today</p>
+            <p id="profileDate" style="color: var(--green); margin-top: 0.4rem;">Profile Created Today</p>
           </div>
         </div>
       </div>
@@ -1168,12 +1345,12 @@
       <div style="margin-bottom: 1rem;"></div>
 
       <div class="profile-section">
-        <div style="font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--amber); margin-bottom: 0.75rem;">ℹ️ Application Info</div>
+        <div style="font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--green); margin-bottom: 0.75rem;">ℹ️ Application Info</div>
         <div style="font-family: var(--font-body); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
           <p style="margin-bottom: 0.5rem;"><strong>App:</strong> REDUNDANT — Academic Vault</p>
           <p style="margin-bottom: 0.5rem;"><strong>Version:</strong> 1.0.0</p>
           <p style="margin-bottom: 0.5rem;"><strong>Purpose:</strong> Complete academic record management</p>
-          <p style="color: var(--amber); margin-top: 0.75rem;"><strong>© 2026 Microintel</strong></p>
+          <p style="color: var(--green); margin-top: 0.75rem;"><strong>© 2026 Microintel</strong></p>
         </div>
       </div>
     </div>
@@ -1478,19 +1655,41 @@ function renderSSLC() {
   emptyEl.style.display = 'none';
   chartWrap.style.display = 'block';
 
-  const totalS = subjs.reduce((a,b)=>a+(+b.scored||0),0);
-  const totalM = subjs.reduce((a,b)=>a+(+b.max||0),0);
+  // Support both legacy (scored/max) and new component model
+  function getSSLCTotals(s) {
+    if (s.components && s.components.length) {
+      return calcSubjectTotal(s);
+    }
+    // Legacy
+    return { scored: +s.scored||0, max: +s.max||0, intScored: +s.scored||0, intMax: +s.max||0, extS: 0, extM: 0 };
+  }
+
+  const totalS = subjs.reduce((a,s)=>{ const t=getSSLCTotals(s); return a+t.scored; },0);
+  const totalM = subjs.reduce((a,s)=>{ const t=getSSLCTotals(s); return a+t.max; },0);
   const avg = pct(totalS,totalM);
   document.getElementById('sslc-summary').textContent = `${subjs.length} subjects · ${totalS}/${totalM} · ${avg}% · ${grade(avg)}`;
 
   tbody.innerHTML = subjs.map(s => {
-    const p = pct(+s.scored||0, +s.max||0);
+    const t = getSSLCTotals(s);
+    const p = pct(t.scored, t.max);
+    const compPills = (s.components||[]).length
+      ? `<div class="comp-list">${(s.components||[]).map(c =>
+          `<div class="comp-pill">
+            <span class="comp-pill-name">${escHtml(c.name)}</span>
+            <span class="comp-pill-score">${c.scored}/${c.max}</span>
+          </div>`
+        ).join('')}</div>`
+      : `<span style="color:var(--text-dim);font-size:0.72rem;">${s.scored||0}/${s.max||0}</span>`;
+    const extDisplay = (s.external?.max > 0)
+      ? `<span class="marks-badge">${s.external.scored||0}/${s.external.max}</span>`
+      : `<span style="color:var(--text-dim);font-size:0.72rem;">—</span>`;
     return `<tr>
-      <td style="font-family:var(--font-body);font-size:0.85rem;">${escHtml(s.name)}</td>
-      <td class="marks-badge">${s.scored}</td>
-      <td style="color:var(--text-secondary);">${s.max}</td>
-      <td><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
-      <td style="color:var(--amber-light);font-weight:600;">${grade(p)}</td>
+      <td style="font-family:var(--font-body);font-size:0.9rem;font-weight:500;">${escHtml(s.name)}</td>
+      <td data-label="Internals">${compPills}</td>
+      <td data-label="External">${extDisplay}</td>
+      <td data-label="Total" class="marks-badge" style="white-space:nowrap;">${t.scored}/${t.max}</td>
+      <td data-label="%"><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
+      <td data-label="Grade" style="color:var(--green-light);font-weight:600;">${grade(p)}</td>
       <td>
         <div class="action-cell">
           <button class="btn btn-ghost btn-sm" onclick="openEditSubjectModal('sslc',null,'${s.id}')">Edit</button>
@@ -1559,17 +1758,24 @@ function renderSemBody(stage, sem, subjs) {
   const rows = subjs.map(s => {
     const t = calcSubjectTotal(s);
     const p = pct(t.scored, t.max);
-    const compSummary = (s.components||[]).map(c=>`${c.name}:${c.scored}/${c.max}`).join(' · ');
+    const compPills = (s.components||[]).length
+      ? `<div class="comp-list">${(s.components||[]).map(c =>
+          `<div class="comp-pill">
+            <span class="comp-pill-name">${escHtml(c.name)}</span>
+            <span class="comp-pill-score">${c.scored}/${c.max}</span>
+          </div>`
+        ).join('')}</div>`
+      : `<span style="color:var(--text-dim);font-size:0.72rem;">—</span>`;
     return `<tr>
-      <td style="font-family:var(--font-body);font-size:0.85rem;">
+      <td style="font-family:var(--font-body);font-size:0.9rem;font-weight:500;">
         ${escHtml(s.name)}
-        ${isEng ? `<span class="exam-badge exam-${s.examType||'regular'}" style="margin-left:0.4rem;">${s.examType||'regular'}</span>` : ''}
+        ${isEng ? `<div style="margin-top:0.25rem;"><span class="exam-badge exam-${s.examType||'regular'}">${s.examType||'regular'}</span></div>` : ''}
       </td>
-      <td style="font-size:0.62rem;color:var(--text-secondary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${compSummary}">${compSummary||'—'}</td>
-      <td class="marks-badge">${s.external?.scored||0}/${s.external?.max||0}</td>
-      <td class="marks-badge">${t.scored}/${t.max}</td>
-      <td><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
-      <td style="color:var(--amber-light);font-weight:600;">${grade(p)}</td>
+      <td data-label="Internals">${compPills}</td>
+      <td data-label="External" class="marks-badge" style="white-space:nowrap;">${s.external?.scored||0}/${s.external?.max||0}</td>
+      <td data-label="Total" class="marks-badge" style="white-space:nowrap;">${t.scored}/${t.max}</td>
+      <td data-label="%"><span class="pct-badge ${pctClass(p)}">${p}%</span></td>
+      <td data-label="Grade" style="color:var(--green-light);font-weight:600;font-size:0.9rem;">${grade(p)}</td>
       <td>
         <div class="action-cell">
           <button class="btn btn-ghost btn-sm" onclick="openEditSubjectModal('${stage}','${sem.id}','${s.id}')">Edit</button>
@@ -1660,6 +1866,10 @@ function buildSubjectForm(stage, semId, subj) {
   }
 
   if (stage === 'sslc') {
+    const comps = subj?.components || [];
+    const extS = subj?.external?.scored ?? '';
+    const extM = subj?.external?.max ?? '';
+    const compRows = comps.map((c,i) => buildCompRow(i, c.name, c.scored, c.max)).join('');
     return `
     <div class="form-row single">
       <div class="form-field">
@@ -1667,14 +1877,24 @@ function buildSubjectForm(stage, semId, subj) {
         <input class="form-input" id="f-name" placeholder="e.g. Mathematics" value="${escHtml(subj?.name||'')}">
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-field">
-        <label class="form-label">Marks Scored</label>
-        <input class="form-input" type="number" id="f-scored" placeholder="0" value="${subj?.scored||''}">
+    <div class="components-section">
+      <div class="components-title">
+        <span>Internal Components</span>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="addCompRow()">+ Add Component</button>
       </div>
-      <div class="form-field">
-        <label class="form-label">Max Marks</label>
-        <input class="form-input" type="number" id="f-max" placeholder="100" value="${subj?.max||100}">
+      <div id="comp-list">${compRows}</div>
+    </div>
+    <div class="components-section">
+      <div class="components-title"><span>External / End Exam</span></div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Scored</label>
+          <input class="form-input" type="number" id="f-ext-scored" placeholder="0" value="${extS}">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Max Marks</label>
+          <input class="form-input" type="number" id="f-ext-max" placeholder="100" value="${extM}">
+        </div>
       </div>
     </div>`;
   }
@@ -1747,9 +1967,28 @@ async function saveSubject() {
   if (!name) { toast('Subject name is required'); return; }
 
   if (stage === 'sslc') {
-    const scored = +document.getElementById('f-scored').value || 0;
-    const max    = +document.getElementById('f-max').value || 100;
-    const subj = { id: mode==='edit'?id:uid(), name, scored, max };
+    // Gather components
+    const compListEl = document.getElementById('comp-list');
+    const components = [];
+    if (compListEl) {
+      compListEl.querySelectorAll('.component-row').forEach(row => {
+        const nameInp   = row.querySelector('[data-comp-name]');
+        const scoredInp = row.querySelector('[data-comp-scored]');
+        const maxInp    = row.querySelector('[data-comp-max]');
+        if (nameInp && nameInp.value.trim()) {
+          components.push({ name: nameInp.value.trim(), scored: +scoredInp.value||0, max: +maxInp.value||0 });
+        }
+      });
+    }
+    const extScored = +document.getElementById('f-ext-scored')?.value || 0;
+    const extMax    = +document.getElementById('f-ext-max')?.value || 0;
+    const external  = { scored: extScored, max: extMax };
+    const subj = { id: mode==='edit'?id:uid(), name, components, external };
+    // Legacy compat: keep scored/max as totals for dashboard
+    const intTotal = components.reduce((a,c)=>a+(+c.scored||0),0);
+    const intMax   = components.reduce((a,c)=>a+(+c.max||0),0);
+    subj.scored = intTotal + extScored;
+    subj.max    = intMax + extMax;
     if (mode === 'edit') {
       const idx = state.sslc.findIndex(s=>s.id===id);
       state.sslc[idx] = subj;
@@ -1900,8 +2139,8 @@ function makeChart(canvasId, config) {
 }
 
 const chartDefaults = {
-  color: 'rgba(232,220,200,0.7)',
-  font: { family: "'IBM Plex Mono', monospace", size: 10 },
+  color: 'rgba(255,255,255,0.65)',
+  font: { family: "system-ui, sans-serif", size: 10 },
 };
 
 function renderDashCharts(stageData) {
@@ -1920,9 +2159,9 @@ function renderDashCharts(stageData) {
       datasets: [{
         label: 'Average %',
         data: avgs,
-        borderColor: '#c8922a',
-        backgroundColor: 'rgba(200,146,42,0.1)',
-        pointBackgroundColor: '#c8922a',
+        borderColor: '#22c55e',
+        backgroundColor: 'rgba(34,197,94,0.10)',
+        pointBackgroundColor: '#22c55e',
         pointRadius: 5,
         tension: 0.3,
         fill: true,
@@ -1947,8 +2186,8 @@ function renderDashCharts(stageData) {
       labels: combined.map(s => s.name.length>12?s.name.slice(0,12)+'…':s.name),
       datasets: [{
         data: combined.map(s=>s.pct),
-        backgroundColor: combined.map((s,i)=> i<5 ? 'rgba(74,138,90,0.6)' : 'rgba(200,74,58,0.6)'),
-        borderColor: combined.map((s,i)=> i<5 ? '#7acc8a' : '#e07060'),
+        backgroundColor: combined.map((s,i)=> i<5 ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)'),
+        borderColor: combined.map((s,i)=> i<5 ? '#4ade80' : '#f87171'),
         borderWidth: 1,
       }]
     },
@@ -1966,8 +2205,8 @@ function renderSSLCChart() {
       datasets: [{
         label: 'Percentage',
         data: subjs.map(s=>pct(+s.scored||0,+s.max||0)),
-        backgroundColor: 'rgba(200,146,42,0.5)',
-        borderColor: '#c8922a',
+        backgroundColor: 'rgba(34,197,94,0.45)',
+        borderColor: '#22c55e',
         borderWidth: 1,
       }]
     },
@@ -1976,7 +2215,7 @@ function renderSSLCChart() {
 }
 
 function renderCharts() {
-  // Diploma semesters
+  // ── Diploma semesters bar ──
   const dipSems = state.semesters.diploma;
   makeChart('chartDipSem', {
     type: 'bar',
@@ -1985,15 +2224,15 @@ function renderCharts() {
       datasets: [{
         label: 'Avg %',
         data: dipSems.map(s=>semAvg('diploma',s.id)),
-        backgroundColor: 'rgba(200,146,42,0.5)',
-        borderColor: '#c8922a',
+        backgroundColor: 'rgba(34,197,94,0.45)',
+        borderColor: '#22c55e',
         borderWidth: 1,
       }]
     },
     options: barChartOpts('%')
   });
 
-  // Engineering semesters
+  // ── Engineering semesters bar ──
   const engSems = state.semesters.engineering;
   makeChart('chartEngSem', {
     type: 'bar',
@@ -2002,45 +2241,54 @@ function renderCharts() {
       datasets: [{
         label: 'Avg %',
         data: engSems.map(s=>semAvg('engineering',s.id)),
-        backgroundColor: 'rgba(74,138,90,0.4)',
-        borderColor: '#7acc8a',
+        backgroundColor: 'rgba(34,197,94,0.35)',
+        borderColor: '#4ade80',
         borderWidth: 1,
       }]
     },
     options: barChartOpts('%')
   });
 
-  // SSLC Radar
-  const sslc = state.sslc;
-  if (sslc.length >= 3) {
-    makeChart('chartSSLCRadar', {
-      type: 'radar',
-      data: {
-        labels: sslc.map(s=>s.name.length>8?s.name.slice(0,8)+'…':s.name),
-        datasets: [{
-          label: 'SSLC',
-          data: sslc.map(s=>pct(+s.scored||0,+s.max||0)),
-          backgroundColor: 'rgba(200,146,42,0.15)',
-          borderColor: '#c8922a',
-          pointBackgroundColor: '#c8922a',
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display:false } },
-        scales: {
-          r: {
-            max: 100, min: 0,
-            grid: { color: 'rgba(200,146,42,0.1)' },
-            ticks: { color: 'rgba(232,220,200,0.5)', font:{family:"'IBM Plex Mono'",size:9}, backdropColor:'transparent', stepSize:25 },
-            pointLabels: { color: 'rgba(232,220,200,0.7)', font:{family:"'IBM Plex Mono'",size:9} },
-          }
-        }
-      }
-    });
-  }
+  // ── All subjects list for downstream charts ──
+  const allSubjs = [
+    ...state.sslc.map(s=>{ const sc=+s.scored||0,mx=+s.max||0; return {name:s.name, pct:pct(sc,mx)}; }),
+    ...state.diploma.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+    ...state.engineering.map(s=>{ const t=calcSubjectTotal(s); return {name:s.name, pct:pct(t.scored,t.max)}; }),
+  ];
 
-  // Stage comparison
+  // ── Grade distribution pie ──
+  const gradeCounts = {O:0,'A+':0,A:0,'B+':0,B:0,C:0,F:0};
+  allSubjs.forEach(s => { const g=grade(s.pct); gradeCounts[g]=(gradeCounts[g]||0)+1; });
+  const gradeLabels = Object.keys(gradeCounts).filter(g=>gradeCounts[g]>0);
+  const gradeColors = {
+    'O':  'rgba(34,197,94,0.8)',
+    'A+': 'rgba(74,222,128,0.8)',
+    'A':  'rgba(96,165,250,0.8)',
+    'B+': 'rgba(251,191,36,0.8)',
+    'B':  'rgba(251,146,60,0.8)',
+    'C':  'rgba(167,139,250,0.8)',
+    'F':  'rgba(248,113,113,0.8)',
+  };
+  makeChart('chartGradePie', {
+    type: 'pie',
+    data: {
+      labels: gradeLabels,
+      datasets: [{
+        data: gradeLabels.map(g=>gradeCounts[g]),
+        backgroundColor: gradeLabels.map(g=>gradeColors[g]),
+        borderColor: 'rgba(0,0,0,0.3)',
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:true, position:'right', labels:{color:'rgba(255,255,255,0.7)',font:{family:"system-ui",size:10},padding:10} }
+      }
+    }
+  });
+
+  // ── Stage comparison bar ──
   const stageAvgs = [
     pct(state.sslc.reduce((a,b)=>a+(+b.scored||0),0), state.sslc.reduce((a,b)=>a+(+b.max||0),0)),
     stageAvg(state.diploma),
@@ -2053,12 +2301,108 @@ function renderCharts() {
       datasets: [{
         label: 'Overall %',
         data: stageAvgs,
-        backgroundColor: ['rgba(200,146,42,0.6)','rgba(74,138,90,0.6)','rgba(100,130,200,0.6)'],
-        borderColor: ['#c8922a','#7acc8a','#8090e0'],
+        backgroundColor: ['rgba(34,197,94,0.55)','rgba(74,222,128,0.55)','rgba(96,165,250,0.55)'],
+        borderColor: ['#22c55e','#4ade80','#60a5fa'],
         borderWidth: 1,
       }]
     },
     options: barChartOpts('%')
+  });
+
+  // ── SSLC subject bar ──
+  const sslc = state.sslc;
+  if (sslc.length) {
+    makeChart('chartSSLCBar', {
+      type: 'bar',
+      data: {
+        labels: sslc.map(s=>s.name.length>12?s.name.slice(0,12)+'…':s.name),
+        datasets: [{
+          label: '%',
+          data: sslc.map(s=>pct(+s.scored||0,+s.max||0)),
+          backgroundColor: sslc.map(s=>{ const p=pct(+s.scored||0,+s.max||0); return p>=70?'rgba(34,197,94,0.55)':p>=50?'rgba(251,191,36,0.55)':'rgba(239,68,68,0.55)'; }),
+          borderColor: sslc.map(s=>{ const p=pct(+s.scored||0,+s.max||0); return p>=70?'#22c55e':p>=50?'#fbbf24':'#f87171'; }),
+          borderWidth: 1,
+        }]
+      },
+      options: barChartOpts('%')
+    });
+  }
+
+  // ── SSLC Radar ──
+  if (sslc.length >= 3) {
+    makeChart('chartSSLCRadar', {
+      type: 'radar',
+      data: {
+        labels: sslc.map(s=>s.name.length>8?s.name.slice(0,8)+'…':s.name),
+        datasets: [{
+          label: 'SSLC',
+          data: sslc.map(s=>pct(+s.scored||0,+s.max||0)),
+          backgroundColor: 'rgba(34,197,94,0.12)',
+          borderColor: '#22c55e',
+          pointBackgroundColor: '#22c55e',
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display:false } },
+        scales: {
+          r: {
+            max: 100, min: 0,
+            grid: { color: 'rgba(34,197,94,0.10)' },
+            ticks: { color: 'rgba(255,255,255,0.45)', font:{family:"system-ui",size:9}, backdropColor:'transparent', stepSize:25 },
+            pointLabels: { color: 'rgba(255,255,255,0.65)', font:{family:"system-ui",size:9} },
+          }
+        }
+      }
+    });
+  }
+
+  // ── Pass/Fail doughnut ──
+  const passCount = allSubjs.filter(s=>s.pct>=40).length;
+  const failCount = allSubjs.filter(s=>s.pct<40).length;
+  makeChart('chartPassFail', {
+    type: 'doughnut',
+    data: {
+      labels: ['Pass','Fail'],
+      datasets: [{
+        data: [passCount, failCount],
+        backgroundColor: ['rgba(34,197,94,0.75)','rgba(239,68,68,0.75)'],
+        borderColor: ['#22c55e','#ef4444'],
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      cutout: '60%',
+      plugins:{
+        legend:{ display:true, position:'bottom', labels:{color:'rgba(255,255,255,0.7)',font:{family:"system-ui",size:10}} }
+      }
+    }
+  });
+
+  // ── Top 8 subjects horizontal bar ──
+  const top8 = [...allSubjs].sort((a,b)=>b.pct-a.pct).slice(0,8);
+  makeChart('chartTop8', {
+    type: 'bar',
+    data: {
+      labels: top8.map(s=>s.name.length>14?s.name.slice(0,14)+'…':s.name),
+      datasets: [{
+        label: '%',
+        data: top8.map(s=>s.pct),
+        backgroundColor: top8.map(s=>s.pct>=70?'rgba(34,197,94,0.55)':s.pct>=50?'rgba(251,191,36,0.55)':'rgba(239,68,68,0.55)'),
+        borderColor: top8.map(s=>s.pct>=70?'#22c55e':s.pct>=50?'#fbbf24':'#f87171'),
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ min:0, max:100, grid:{color:'rgba(34,197,94,0.08)'}, ticks:{color:'rgba(255,255,255,0.45)',font:{family:"system-ui",size:9},callback:v=>v+'%'} },
+        y:{ grid:{display:false}, ticks:{color:'rgba(255,255,255,0.65)',font:{family:"system-ui",size:9}} }
+      }
+    }
   });
 }
 
@@ -2067,8 +2411,8 @@ function lineChartOpts(xLabel, yLabel) {
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{display:false} },
     scales:{
-      x:{ grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} },
-      y:{ min:0,max:100, grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} }
+      x:{ grid:{color:'rgba(34,197,94,0.08)'}, ticks:{color:'rgba(255,255,255,0.45)',font:{family:"system-ui",size:9}} },
+      y:{ min:0,max:100, grid:{color:'rgba(34,197,94,0.08)'}, ticks:{color:'rgba(255,255,255,0.45)',font:{family:"system-ui",size:9}} }
     }
   };
 }
@@ -2078,8 +2422,8 @@ function barChartOpts(yLabel) {
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{display:false} },
     scales:{
-      x:{ grid:{display:false}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}} },
-      y:{ min:0,max:100, grid:{color:'rgba(200,146,42,0.08)'}, ticks:{color:'rgba(232,220,200,0.5)',font:{family:"'IBM Plex Mono'",size:9}, callback:v=>v+'%'} }
+      x:{ grid:{display:false}, ticks:{color:'rgba(255,255,255,0.45)',font:{family:"system-ui",size:9}} },
+      y:{ min:0,max:100, grid:{color:'rgba(34,197,94,0.08)'}, ticks:{color:'rgba(255,255,255,0.45)',font:{family:"system-ui",size:9}, callback:v=>v+'%'} }
     }
   };
 }
@@ -2334,7 +2678,7 @@ function exportHTMLReport() {
 
     <h2 style="
       margin:0;
-      color:#7a5618;
+      color:#166534;
       font-size:1.5rem;
     ">
       ${escHtml(profile.name)}
@@ -2461,12 +2805,12 @@ function exportHTMLReport() {
 
       h1{
         border-bottom:
-          3px solid #c8922a;
+          3px solid #22c55e;
         padding-bottom:8px;
       }
 
       h2{
-        color:#7a5618;
+        color:#166534;
       }
 
       h3{
@@ -2821,15 +3165,30 @@ async function generatePDFReport() {
       let rows = '';
 
       state.sslc.forEach(subj => {
-        const percentage = subj.max
-          ? ((subj.scored / subj.max) * 100).toFixed(1)
-          : 0;
+        let intScored = 0, intMax = 0;
+        const comps = subj.components || [];
+        comps.forEach(c => { intScored += Number(c.scored||0); intMax += Number(c.max||0); });
+        const extScored = Number(subj.external?.scored || 0);
+        const extMax    = Number(subj.external?.max    || 0);
+        const totalS = intScored + extScored;
+        const totalM = intMax    + extMax;
+        // Legacy fallback
+        const finalS = totalM > 0 ? totalS : Number(subj.scored || 0);
+        const finalM = totalM > 0 ? totalM : Number(subj.max    || 0);
+        const percentage = finalM ? ((finalS / finalM) * 100).toFixed(1) : 0;
+
+        const internalDetail = comps.length
+          ? comps.map(c => `${c.name}: ${c.scored}/${c.max}`).join('<br>')
+          : (totalM === 0 ? `${subj.scored||0}/${subj.max||0}` : `${intScored}/${intMax}`);
+
+        const extDisplay = extMax > 0 ? `${extScored}/${extMax}` : '—';
 
         rows += `
           <tr>
             <td>${subj.name}</td>
-            <td>${subj.scored}</td>
-            <td>${subj.max}</td>
+            <td>${internalDetail}</td>
+            <td>${extDisplay}</td>
+            <td>${finalS}/${finalM}</td>
             <td>${percentage}%</td>
             <td>${getGrade(percentage)}</td>
           </tr>
@@ -2848,8 +3207,9 @@ async function generatePDFReport() {
             <thead>
               <tr>
                 <th>Subject</th>
-                <th>Scored</th>
-                <th>Max</th>
+                <th>Internal Components</th>
+                <th>External</th>
+                <th>Total</th>
                 <th>%</th>
                 <th>Grade</th>
               </tr>
@@ -2960,11 +3320,13 @@ async function generatePDFReport() {
     // ═══════════════════════════════════════
 
     const profileName =
-      localStorage.getItem('profile_name') ||
+      userProfile.name ||
+      localStorage.getItem('userName') ||
       'Student';
 
     const profileEmail =
-      localStorage.getItem('profile_email') ||
+      userProfile.email ||
+      localStorage.getItem('userEmail') ||
       'No Email';
 
     // ═══════════════════════════════════════
@@ -2988,7 +3350,7 @@ async function generatePDFReport() {
         
         h1 {
         text-align: center;
-        color: #c8922a;
+        color: #22c55e;
         font-size: 32px;
         margin-bottom: 4px;
         letter-spacing: 1px;
@@ -3004,7 +3366,7 @@ async function generatePDFReport() {
         .info-box {
         background: #161616;
         border: 1px solid #2c2c2c;
-        border-left: 4px solid #c8922a;
+        border-left: 4px solid #22c55e;
         border-radius: 10px;
         padding: 16px;
         margin-bottom: 30px;
@@ -3020,7 +3382,7 @@ async function generatePDFReport() {
         }
         
         h2 {
-        background: linear-gradient(90deg,#c8922a,#9b6d16);
+        background: #22c55e;
         color: white;
         padding: 12px 16px;
         border-radius: 8px;
@@ -3050,7 +3412,7 @@ async function generatePDFReport() {
         }
         
         th {
-        color: #c8922a;
+        color: #22c55e;
         font-weight: 600;
         padding: 10px;
         border: 1px solid #2e2e2e;

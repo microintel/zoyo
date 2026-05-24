@@ -2218,7 +2218,7 @@ function renderCharts() {
   // ── Diploma semesters bar ──
   const dipSems = state.semesters.diploma;
   makeChart('chartDipSem', {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: dipSems.map(s=>s.label),
       datasets: [{
@@ -2235,7 +2235,7 @@ function renderCharts() {
   // ── Engineering semesters bar ──
   const engSems = state.semesters.engineering;
   makeChart('chartEngSem', {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: engSems.map(s=>s.label),
       datasets: [{
